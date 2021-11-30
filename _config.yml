@@ -16,11 +16,11 @@ minimal_mistakes_skin    : "mint" # "air", "aqua", "contrast", "dark", "dirt", "
 
 # Site Settings
 locale                   : "ko-KR"
-title                    : "개발인재의 블로그"
+title                    : "인제는 개발인재"
 title_separator          : "|"
-subtitle                 : "개발인재가 되고 싶어 시작한 개발공부 블로그입니다."
-name                     : "개발인재"
-description              : "개발인재의 블로그입니다."
+subtitle                 : "인제는 개발인재가 되고 싶어 시작한 개발공부 블로그입니다."
+name                     : "인제는 개발인재"
+description              : "인제는 개발인재의 블로그입니다."
 url                      : "https://injae7034.github.io"
 baseurl                  : # the subpath of your site, e.g. "/blog"
 repository               : # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
@@ -71,7 +71,7 @@ google:
   search_engine_id       : # YOUR_SEARCH_ENGINE_ID
   instant_search         : # false (default), true
 # SEO Related
-google_site_verification :
+google_site_verification : 
 bing_site_verification   :
 naver_site_verification  : "e5991900b83f081489b9999363a89181cdceb975"
 yandex_site_verification :
@@ -102,9 +102,9 @@ analytics:
 
 # Site Author
 author:
-  name             : "개발인재"
+  name             : "인제는 개발인재"
   avatar           : # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
-  bio              : "개발인재의 개발공부 블로그입니다."
+  bio              : "개발공부 블로그입니다."
   location         : "South Korea"
   email            : "injae7034@gmail.com"
   links:
