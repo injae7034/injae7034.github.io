@@ -16,11 +16,11 @@ minimal_mistakes_skin    : "mint" # "air", "aqua", "contrast", "dark", "dirt", "
 
 # Site Settings
 locale                   : "ko-KR"
-title                    : "인제가면 인재오나"
+title                    : "인재개발실록"
 title_separator          : "|"
-subtitle                 : "인제는 개발인재가 되고 싶어 시작한 개발공부 블로그"
-name                     : "개발인재"
-description              : "인제는 개발인재의 개발공부 블로그입니다."
+# subtitle                 : "개발인재가 되기 위해 시작한 개발공부 기록용 블로그입니다."
+name                     : "Injae"
+description              : "Programmer"
 url                      : "https://injae7034.github.io"
 baseurl                  : # the subpath of your site, e.g. "/blog"
 repository               : # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
@@ -104,7 +104,7 @@ analytics:
 author:
   name             : "개발인재"
   avatar           : # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
-  bio              : "개발공부 블로그입니다."
+  bio              : "개발인재가 되기 위해 시작한 개발공부 기록용 블로그입니다."
   location         : "South Korea"
   email            : "injae7034@gmail.com"
   links:
