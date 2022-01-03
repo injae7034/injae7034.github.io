@@ -137,6 +137,31 @@ public class Personal implements Cloneable
 ```
 Personal의 각 필드들은 private이기 때문에 외부에서 접근을 할 수 없기 때문에 외부에서 값을 가져오기 위해서 각 필드당 getter메소드를 만들어줍니다.<br><br>
 
+### setter 메소드
+VisitingCardBinder에서 얕은 복사, 깊은 복사 테스트를 하기 위해 별도로 만들었습니다.<br><br>
+원래는 명함의 개념상 명함의 내용을 수정한다는 것이 말이 안되나(명함의 내용이 바뀌면 새로 명함을 만들기 때문에)여기서는 얕은 복사, 깊은 복사를 실험하기 위해 변경할 수 있게 메소드를 만들었습니다.<br><br>
+```java
+public class Personal implements Cloneable
+{
+    //setter 메소드
+    //position 변경하기
+    public void setPosition(String position)
+    {
+        this.position = position;
+    }
+    //cellularPhone 변경하기
+    public void setCellularPhoneNumber(String cellularPhoneNumber)
+    {
+        this.cellularPhoneNumber = cellularPhoneNumber;
+    }
+    //emailAddress 변경하기
+    public void setEmailAddress(String emailAddress)
+    {
+        this.emailAddress = emailAddress;
+    }
+}
+```
+
 # Company 클래스
 Company 클래스는 명함에 있는 회사의 정보들을 저장 및 관리하는 클래스입니다.<br><br>
 ## Company 클래스 필드
@@ -249,6 +274,34 @@ public class Company implements Cloneable
     public String getFaxNumber() { return  this.faxNumber; }
     //url 가져오기
     public  String getUrl() { return  this.url; }
+}
+```
+### setter 메소드
+Personal과 마찬가지로 이후에 VisitingCardBinder에서 얕은 복사, 깊은 복사를 테스트하기 위해 만들었습니다.<br>
+```java
+public class Company implements Cloneable
+{
+    //setter 메소드
+    //address 변경하기
+    public void setAddress(String address)
+    {
+        this.address = address;
+    }
+    //telephoneNumber변경하기
+    public void setTelephoneNumber(String telephoneNumber)
+    {
+        this.telephoneNumber = telephoneNumber;
+    }
+    //faxNumber 변경하기
+    public void setFaxNumber(String faxNumber)
+    {
+        this.faxNumber = faxNumber;
+    }
+    //url 변경하기
+    public void setUrl(String url)
+    {
+        this.url = url;
+    }
 }
 ```
 
@@ -410,6 +463,52 @@ public class VisitingCard implements Cloneable
     public String getUrl() { return this.company.getUrl(); }
 }
 ```
+
+### setter 메소드
+```java
+public class VisitingCard implements Cloneable
+{
+    //persoanl setter 메소드
+    //position 변경하기
+    public void setPosition(String position)
+    {
+        this.personal.setPosition(position);
+    }
+    //cellularPhoneNumber 변경하기
+    public void setCellularPhoneNumber(String cellularPhoneNumber)
+    {
+        this.personal.setCellularPhoneNumber(cellularPhoneNumber);
+    }
+    //emailAddress 변경하기
+    public void setEmailAddress(String emailAddress)
+    {
+        this.personal.setEmailAddress(emailAddress);
+    }
+
+    //company setter 메소드
+    //address 변경하기
+    public void setAddress(String address)
+    {
+        this.company.setAddress(address);
+    }
+    //telephoneNumber 변경하기
+    public  void setTelephoneNumber(String telephoneNumber)
+    {
+        this.company.setTelephoneNumber(telephoneNumber);
+    }
+    //faxNumber 변경하기
+    public void setFaxNumber(String faxNumber)
+    {
+        this.company.setFaxNumber(faxNumber);
+    }
+    //url 변경하기
+    public void setUrl(String url)
+    {
+        this.company.setUrl(url);
+    }
+}
+```
+
 # 테스트 시나리오
 이제 Personal, Company, VistingCard메소드의 클래스들이 잘 작동하는지 테스트를 해보도록 하겠습니다.
 
