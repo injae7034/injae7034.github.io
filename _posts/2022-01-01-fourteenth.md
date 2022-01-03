@@ -2,7 +2,7 @@
 layout: single
 title:  "Java로 명함철 구현하기 - VisitingCard"
 categories: Java
-tag: [Java, 명함철, 프로젝트, VisitingCard, Cloneable, toString, equals, 오버라이딩]
+tag: [Java, 명함철, 프로젝트, VisitingCard, Cloneable, toString, equals, 오버라이딩, 얕은 복사, 깊은 복사]
 toc: true
 toc_label: "목차"
 toc_sticky: true
@@ -313,6 +313,35 @@ public class VisitingCard implements Cloneable
     }
 }
 ```
+### 얕은 복사
+하지만... 나중에 이렇게 하면 **문제가 생긴다**는 것을 깨달았습니다...<br><br>
+위의 방식으로 clone메소드를 정의하면 visitingCard메소드의 clone을 호출할 때, Personal과 Company클래스의 clone은 호출되지 않습니다.<br><br>
+딱, VisitingCard클래스의 clone메소드만 호출되어, Personal과 Company의 참조변수(주소)값을 복사한 복사본을 생성한 뒤에 반환합니다.<br><br>
+즉, 얕은 복사가 됩니다.<br><br>
+위의 방식으로 원본을 복사한 뒤에 복사본의 VisitingCard 객체에서 Personal 또는 Company 클래스의 객체 내용을 변경하면 원본의 VisitingCard 객체의 Personal 또는 Company 클래스의 객체 내용 역시 변경되어 버립니다ㅠ<br><br>
+이 땐 몰랐는데 나중에 VisitingCardBinder에서 깊은 복사 테스트를 해보다가 잘못된 것을 알게 되었습니다ㅠ<br><br>
+그래서 수정하였는데, 자세한 설명은 후속편인 VisitingCardBinder를 구현할 때 메모리맵을 첨부하여 설명하도록 하겠습니다.<br><br>
+### 깊은 복사
+일단 위의 코드를 수정하면<br>
+```java
+public class VisitingCard implements Cloneable
+{
+    //Cloneable 의 clone 메소드 오버라이딩하기(구현하기)
+    @Override
+    public VisitingCard clone() throws CloneNotSupportedException
+    {
+        VisitingCard visitingCard = new VisitingCard(this.personal.clone(), this.company.clone());
+        return  visitingCard;
+    }
+}
+```
+이러한 방식으로 바꿨습니다.<br><br>
+이렇게 되면 VisitingCard를 새로 생성하면서 그 필드멤버인 Persoanal과 Company를 새로 힙에 생성한 주소(원본과 내용은 동일하지만 새로 생성을 했기 때문에 주소값이 다름)를 가지게 됩니다.<br><br>
+이제 복사본인 VisitingCard는 원본과는 별도의 Personal객체와 Company를 가지게 되어서, 복사본의 Personal 또는 Company객체의 내용을 변경하여도 원본의 내용은 바뀌지 않습니다.<br><br>
+즉, 성공적으로 깊은 복사가 되었습니다.<br><br>
+String 역시 객체이나 String클래스의 특성상 자동으로 깊은 복사가 되어 신경쓰지 않아도 됩니다.<br><br>
+이전의 글에서도 언급하였는데, 궁굼하시면 다음 링크에서 String클래스의 특성을 참고해보시면 좋을 거 같습니다.<br>
+[Java로 주소록 구현하기 - Personal](https://injae7034.github.io/java/ninth/){:target="_blank"}
 
 ### equals 메소드
 equals의 경우 메소드 내부에서 VistingCard의 멤버인 Personal클래스와 Company클래스의 equals 메소드를 활용하여 Personal과 Company 객체가 모두 같으면 true이고, 다운캐스팅이 안되거나 Personal과 Company객체 중 하나라도 다르면 false를 반환하도록 구현했습니다.<br><br> 
