@@ -458,7 +458,7 @@ public class VisitingCard implements Cloneable
     //getTelephoneNumber
     public String getTelephoneNumber() { return this.company.getTelephoneNumber(); }
     //getFaxNumber
-    public String getFaxNumber() { return this.getFaxNumber(); }
+    public String getFaxNumber() { return this.company.getFaxNumber(); }
     //getUrl
     public String getUrl() { return this.company.getUrl(); }
 }
