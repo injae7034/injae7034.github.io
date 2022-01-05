@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+sitemap: https://injae7034.github.io/sitemap.xml
