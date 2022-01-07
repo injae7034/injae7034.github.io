@@ -173,6 +173,7 @@ String sql에 저장된 쿼리문은 Personal 테이블에 있는 모든 객체�
 이 3가지 클래스의 객체들 모두 이용을 하고 나면 프로그래머가 **자원을 반납**해야 하기 때문에 **Try-with-resources**를 통해 try()소괄호 안에서 생성했기 때문에 try-catch구문이 끝나면 자동으로 자원을 반납해줍니다.<br><br>
 그게 아니라면 코드가 상당히 길어지고 번거로워 집니다.<br><br>
 아래 코드는 만약에 **Try-with-resources를 하지 않았을 경우의 코드**입니다.<br><br>
+### load코드(Try-with-resources적용X)
 ```java
  //데이터베이스 응용프로그래밍 시작
 public void Load()
@@ -317,6 +318,7 @@ load와 마찬가지로 Connection, Statement ,ResultSet을 try()소괄호 안�
 그러면 왜 sql2는 물음표도 없는 확정된 코드인데 Statement대신에 PreparedStatement를 사용하였는지 의문이 생길 수 있습니다.<br><br>
 저도 그랬으니까요;;<br><br>
 그래서 PreparedStatement pstmt = con.prepareStatement(sql2);대신에 **Statement stmt2 = con.createStatement();**로 코드를 바꾸고,  pstmt.executeUpdate(); 대신에 **stmt2.executeUpdate(sql2);**로 코드를 바꿔봤습니다.<br><br>
+
 <u>결과는 sql을 통해 얻은 rs가 tatement stmt2 = con.createStatement(); 하는 순간 닫혀버려서 뒤에서 rs가 정보가 없어서 반복구조를 할 수 없기 때문에 에러가 발생했습니다.</u><br><br>
 
 **PreparedStatement**의 경우 처음에 Connection객체가 생성되고 나면 **prepareStatement(쿼리문이 매개변수)**메소드를 통해 **쿼리문만 있다면 원하는 개수대로 PreparedStatement객체를 생성할 수 있습니다.**<br><br>
@@ -329,6 +331,60 @@ pstmt.executeUpdate();를 통해 데이터베이스에 있는 모든 정보를 �
 반복구조 안에서 rs.next를 통해 코드의 정보를 순차적으로 얻은 다음에 이를 code라는 임시 저장소에 저장합니다. 그 다음 주소록에서 순차적으로 Personal객체정보를 구해오고, PreparedStatement의 **setString**을 통해 아까 sql3의 ?들을 순차적으로 채워줍니다.<br><br>
 물음표 순서를 보면 code, name, address, telephoneNumber, emailAddress 순이기 때문에 순차적으로 setString을 해준 뒤에 완성된 하나의 Personal 객체 정보를 데이터베이스에 저장합니다.(**pstmt2.executeUpdate();**)<br><br>
 이렇게 반복구조를 돌면서 주소록에 저장된 모든 Personal객체의 정보를 전부 데이터베이스로 옮깁니다.<br><br>
+
+## save 코드 수정본
+```java
+public class Main
+{
+    //정적 멤버로 AddressBook객체를 추가함.
+    private static AddressBook addressBook;
+    //save
+    public static void save()
+    {
+        try(//Connection(데이터베이스와 연결을 위한 객체)생성 - getConnection(연결문자열, DB-ID, DB-PW)
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306" +
+                    "/AddressBook?serverTimezone=Asia/Seoul", "root", "1q2w3e");
+            //Statement(일회성 SQL 문을 데이터베이스에 보내기위한 객체)생성
+            Statement stmt = con.createStatement();
+            //ResultSet(SQL 질의에 의해 생성된 테이블을 저장하는 객체)생성
+            //rs는 Personal의 전체 코드를 가지게 됨.
+            ResultSet rs = stmt.executeQuery("SELECT Personal.code FROM Personal;");
+            //PreStatement(여러번 SQL 문을 데이터베이스에 보내기위한 객체)생성
+            PreparedStatement pstmt = con.prepareStatement("DELETE FROM Personal;"))
+        {
+            //DB에 있는 Personal 객체 정보들을 모두 지움.
+            pstmt.executeUpdate();
+            String sql;
+            //명함철의 명함개수만큼 반복한다.
+            for (Personal personal : addressBook.getPersonals())
+            {
+                //rs를 다음 항목으로 이동시킨다.
+                rs.next();
+                //DB에 명함철에서 읽은 개인정보를 추가한다.
+                sql = String.format("INSERT INTO Personal(code, name, address, telephoneNumber," +
+                                " emailAddress) VALUES('%s', '%s', '%s', '%s', '%s');",
+                        rs.getString(1), personal.getName(), personal.getAddress(),
+                        personal.getTelephoneNumber(), personal.getEmailAddress());
+                pstmt.executeUpdate(sql);
+            }
+        }
+        catch (SQLException e)
+        {
+            System.out.println("[SQL Error : " + e.getMessage() +"]");
+        }
+    }
+}
+```
+
+### save 코드 수정본 설명
+이전의 save코드의 경우 PreparedStatement를 필요없이 너무 많이 쓰는 것 같아서 어떻게 하면 코드 수를 줄이면서 더 깔끔하게 작성할 수 있을까 고민을 해봤습니다.<br><br>
+그래서 일단 **"SELECT Personal.code FROM Personal;"**과 같은 짧은 쿼리문은 다로 String의 참조변수에 담지 않고 바로 매개변수로 넘겨줬습니다.<br><br>
+ **ResultSet rs = stmt.executeQuery("SELECT Personal.code FROM Personal;");**<br><br>
+ **PreparedStatement pstmt = con.prepareStatement("DELETE FROM Personal;")**<br><br>
+  이런식으로 말이죠.<br><br>
+  그리고 try구문안에서 PreparedStatement객체의 메소드 executeUpdate 바로 실행해서 DB의 Personal 데이터를 모두 지웁니다.<br><br>
+  그리고 반복구조 내부에서 String.format을 통해 매개변수들을 식으로 넘겨주면서 중복되는 코드를 최소화했습니다.<br><br>그리고 PreparedStatement의 경우 executeUpdate를 할 때 매개변수로 새로 만든 쿼리문을 넘겨주면서 재활용하였습니다.<br><br>save코드를 수정하기 전에는 PreparedStatement를 2개 생성하였는데, 이런식으로 알뜰하게(?) 재활용을 하면 굳이 PreparedStatement객체를 2개 생성할 필요도 없어서, 자원을 아낄 수 있고, 무엇보다도 코드 수가 줄고, 좀 더 직관적으로 코드를 확인할 수 있다는 장점이 있습니다.<br><br>
+
 
 ## getCode 코드
 ```java
@@ -348,13 +404,12 @@ public class Main
             Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
             ResultSet rs = stmt.executeQuery(sql);)
         {
-            int number;
             if(rs.last())
             {
                 code = rs.getString(1);//마지막코드를 읽어들임
             }
             code = code.substring(1,5);
-            number = Integer.parseInt(code);
+            int number = Integer.parseInt(code);
             number++;
             newCode = String.format("P%04d", number);
         }
@@ -626,10 +681,53 @@ public class Main
     }
 }
 ```
+## 수정된 replace 코드
+```java
+public class Main
+{
+    //정적 멤버로 AddressBook객체를 추가함.
+    private static AddressBook addressBook;
+    public static void replace()
+    {
+        try(//Connection(데이터베이스와 연결을 위한 객체)생성 - getConnection(연결문자열, DB-ID, DB-PW)
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306" +
+                    "/AddressBook?serverTimezone=Asia/Seoul", "root", "1q2w3e");
+            //Statement(일회성 SQL 문을 데이터베이스에 보내기위한 객체)생성
+            Statement stmt = con.createStatement();
+            //ResultSet(SQL 질의에 의해 생성된 테이블을 저장하는 객체)생성
+            //rs는 Personal의 전체 코드를 가지게 됨.
+            ResultSet rs = stmt.executeQuery("SELECT Personal.code FROM Personal;");
+            //PreStatement(여러번 SQL 문을 데이터베이스에 보내기위한 객체)생성
+            PreparedStatement pstmt = con.prepareStatement("DELETE FROM Personal;"))
+        {
+            //DB에 있는 Personal 객체 정보들을 모두 지움.
+            pstmt.executeUpdate();
+            String sql;
+            //명함철의 명함개수만큼 반복한다.
+            for (Personal personal : addressBook.getPersonals())
+            {
+                //rs를 다음 항목으로 이동시킨다.
+                rs.next();
+                //DB에 명함철에서 읽은 개인정보를 추가한다.
+                sql = String.format("INSERT INTO Personal(code, name, address, telephoneNumber," +
+                                " emailAddress) VALUES('%s', '%s', '%s', '%s', '%s');",
+                        rs.getString(1), personal.getName(), personal.getAddress(),
+                        personal.getTelephoneNumber(), personal.getEmailAddress());
+                pstmt.executeUpdate(sql);
+            }
+        }
+        catch (SQLException e)
+        {
+            System.out.println("[SQL Error : " + e.getMessage() +"]");
+        }
+    }
+}
+```
+
 ### replace 코드 설명
 코드를 보시면 어디서 많이 본 것 같은 느낌을 받으실 겁니다.<br><br>
 정확합니다.<br><br>
-이 코드는 save와 완벽하게 일치합니다.<br><br>
+이 코드는 **save와 완벽하게 일치**합니다.<br><br>
 그럼 그냥 save를 쓰면 되지 왜 replace라고 별도로 명칭을 지었냐고 물으신다면, arrange에서 save를 호출하는 것은 명칭상 맞지 않다고 생각하여...;;<br><br>
 그래서 프로그램이 종료될 때는 save라는 메소드를 이용하고, 정렬할 때는 replace라는 메소드를 이용하도록 했습니다.<br><br>
 솔직히 replace는 좀 문제가 많은 코드이긴 한데 저도 아직 방법을 찾지 못하여 임시적으로 이 방법을 사용하고 있습니다ㅠ<br><br>
