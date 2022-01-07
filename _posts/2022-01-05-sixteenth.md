@@ -2,7 +2,7 @@
 layout: single
 title:  "Java로 명함철 구현하기 - 자바입출력(RandomAccessFile)"
 categories: Java
-tag: [Java, 명함철, 프로젝트, VisitingCardBinder, Cloneable, toString, equals, 오버라이딩, 얕은 복사, 깊은 복사, 메모리맵, Writer, RandomAccessFile]
+tag: [Java, 명함철, 프로젝트, VisitingCardBinder, Writer, RandomAccessFile]
 toc: true
 toc_label: "목차"
 toc_sticky: true
