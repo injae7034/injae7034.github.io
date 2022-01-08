@@ -1,6 +1,6 @@
 ---
 layout: single
-title:  "Java로 명함철 구현하기 - VisitingCardBinder"
+title:  "Java로 명함철 구현하기 - LinkedList에서 얕은 복사 깊은 복사"
 categories: Java
 tag: [Java, 명함철, 프로젝트, VisitingCardBinder, Cloneable, toString, equals, 오버라이딩, 얕은 복사, 깊은 복사, 메모리맵]
 toc: true

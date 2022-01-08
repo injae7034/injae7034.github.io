@@ -1,6 +1,6 @@
 ---
 layout: single
-title:  "Java로 주소록 구현하기 - MySQL연동"
+title:  "Java로 주소록 구현하기 - 데이터베이스 MySQL과 프로그램 연동"
 categories: Java
 tag: [Java, 주소록, 프로젝트, AddressBook, MySQL, 관계형데이터베이스, CUI, Try-with-resocures, 데이터베이스 기초 이론, 데이터베이스 응용프로그래밍]
 toc: true
