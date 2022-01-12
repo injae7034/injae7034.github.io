@@ -1,6 +1,6 @@
 ---
 layout: single
-title:  "Java프로젝트하면서 테스트하기 위해 콘솔을 이용한 CUI Programming 구현하기"
+title:  "Java프로젝트하면서 테스트하기 위해 콘솔을 이용한 CUI Programming 구현하기(+ 사용자 친화적 설계)"
 categories: Java
 tag: [Java, 명함철, 프로젝트, VisitingCardBinder, CUI]
 toc: true
@@ -9,7 +9,8 @@ toc_sticky: true
 ---
 
 # CUI Programming
-자바입출력 및 VisitingCardBinder의 모든 메소드들이 잘돌아가는지 확인하기 위해 CUI Programming을 구현하였습니다.<br><br>
+자바입출력 및 VisitingCardBinder의 모든 메소드들이 잘돌아가는지 확인하기 위해 콘솔창을 이용하는 CUI Programming을 구현하였습니다.<br><br>
+CUI는 구분선을 만들기 위해 printf나 println을 많이 이용하는 노가다(?)성질이 있지만 GUI보다는 빠르게 만들어 볼 수 있어서 간단한 프로그램을 만들어 테스트해보기에는 좋은 거 같습니다.<br><br>
 주소록은 배열이라서 CUI에서도 테이블형식을 차용하였지만 명함철의 경우 연결리스트를 활용하고 있기 때문에 테이블형식은 지양하고, 연결리스트의 연결의 특성를 살려서 한 화면에 하나의 명함정보를 출력하고, 이를 이동(처음, 이전, 다음, 마지막)하여 명함을 볼 수 있도록 구현하였습니다.
 
 # Main클래스의 main메소드
@@ -22,6 +23,7 @@ import java.util.Scanner;
 
 public class Main
 {
+    //정적 멤버
     private static VisitingCardBinder visitingCardBinder;
     public static void main(String[] args) throws IOException
     {
@@ -61,17 +63,39 @@ public class Main
 ## main메소드 설명
 Main클래스는 정적멤버로 VisitingCardBinder의 참조변수값을 멤버로 가집니다.<br><br>
 그리고 정적매소드인 main에서 VisitingCardBinder를 생성하여 Main클래스의 정적멤버에 그 참조변수(주소)값을 저장합니다.<br><br>
-이 후 load메소드를 통해 외부 텍스트 파일에서 데이터를 읽어들여 명함들을 생성하고, 이를 명함철에 끼웁니다.<br><br>
-load메소드 이후에는 외부 텍스트 파일에 저장된 데이터가 있을 경우에는 명함철에 명함이 끼어져 있을 것이고, 외부 텍스트 파일이 데이터없이 비어있거나 파일 자체가 없을 경우에는 명함철 역시 비어있을 겁니다.<br><br>
+main메소드가 정적메소드이기 때문에 내부에서 정적메소드와 정적멤버만 접근할 수 있기 때문에 VisitingCardBinder도 정적멤버로 설정하였습니다.<br><br>
+이 후 이전 글에서 구현했던 자바입출력 메소드인 load를 호출하여 외부 텍스트 파일에서 데이터를 읽어들여 명함들을 생성하고, 이를 명함철에 끼웁니다.<br><br>
+load메소드에 대한 자세한 설명은 이전 글에 있으니 아래 링크를 참고하시면 됩니다.<br>
+<a href="https://injae7034.github.io/java/sixteenth/#load" target="_blank">VisitingCardBinder의 load메소드</a>
+
+<br><br>
+load메소드 호출 후에 외부 텍스트 파일에 저장된 데이터가 있을 경우에는 명함철에 명함이 끼어져 있을 것이고, 외부 텍스트 파일이 데이터없이 비어있거나 파일 자체가 없을 경우에는 명함철 역시 비어있을 겁니다.<br><br>
 이 후 Main클래스의 정적메소드인 displayMenu메소드를 호출하여 메뉴화면을 콘솔창에 출력합니다.<br><br>
-**displayMenu의 경우 메뉴창과 현재 명함(VisitingCardBinder의 필드멤버인 current)의 정보가 콘솔창에 출력**될 것입니다.<br><br> 이 출력된 콘솔창을 참고로 하여, 콘솔창에서 menu 번호를 입력을 받습니다.<br><br>
-사용자로부터 콘솔창에서 입력을 받기 위해 Scanner클래스를 생성해주고, Scanner의 메소드 nextInt를 통해 사용자가 입력한 숫자를 읽어들입니다.<br><br>
+
+**displayMenu메소드는 메뉴창과 현재 명함(VisitingCardBinder의 필드멤버인 current)의 정보가 콘솔창에 출력**하는 역할을 합니다.<br><br>
+이 displayMenu메소드 호출을 하면 콘솔창에 메뉴와 현재 명함 정보를 출력한 다음 메소드가 종료됩니다.<br><br>
+displayMenu메소드가 종료되면 다시 main메소드로 돌아가는데 사용자로부터 콘솔창에서 입력을 받기 위해 Scanner클래스를 생성해주고, Scanner의 메소드 nextInt를 통해 사용자가 입력한 숫자를 읽어들입니다.<br><br>
+이 때 사용자는 displayMenu에서 콘솔창에 출력한 메뉴창과 현재 명함 정보를 참고로 하여, 콘솔창에서 자신이 원하는 menu 번호를 입력을 합니다.<br><br>
 사용자가 1번을 누르면 끼우기 화면(formFoTakingIn)이 출력될 것입니다.<br><br>
 2번을 누르면 찾기화면(formFoFinding)이 출력될 것입니다.<br><br>
-3번을 누르면 꺼내기화면(formFoTakingOut)을 출력할 것입니다. 즉, 총 화면 구성은 displayMenu까지 포함하여 4가지입니다.<br><br>
-4번을 누르면 명함철에 있는 명함을 개인의 성명을 기준으로 하여 오름차순으로 정렬하는 arrage메소들 호출하고, displayMenu에서 arrange메소드 이후의 결과를 보여줍니다.<br><br>즉, 다른 화면이 출력되는 것이 아니고, displayMenu에서 결과만 바뀌는 것(출력되는 명함의 정보가 바뀜)입니다.<br><br>
+3번을 누르면 꺼내기화면(formFoTakingOut)을 출력할 것입니다.<br><br>
+즉, 총 화면 구성은 displayMenu까지 포함하여 4가지입니다.<br><br>
+그래서 이번 **CUI프로그래밍은 이 4가지 화면 구성에 대한 설계**입니다.<br><br>
+나머지(arrange, first, previous, next, last)는 displayMenu에서 현재 명함을 출력함으로써 처리됩니다.<br><br>
+4번을 누르면 명함철에 있는 명함을 개인의 성명을 기준으로 하여 오름차순으로 정렬하는 arrage메소들 호출하고, displayMenu에서 arrange메소드 이후의 결과를 보여줍니다.<br><br>
+즉, 다른 화면이 출력되는 것이 아니고, displayMenu에서 결과만 바뀌는 것(출력되는 현재 명함의 정보가 바뀜)입니다.<br><br>
+arrage메소드에 대한 코드와 설명은 이전 글에 자세하게 설명되어 있습니다.<br>
+<a href="https://injae7034.github.io/java/fifteenth/#arrange" target="_blank">VisitingCardBinder의 arrange메소드</a>
+
+<br><br>
 5번을 누르면 first메소드를 호출하여 현재 명함(current)이 처음 명함으로 바뀔 것이고, displayMenu에서 처음 명함이 콘솔 창에 출력될 것입니다.<br><br>
-6번은 이전, 7번은 다음, 8번은 displayMenu내에서 마지막 명함이 출력될 것이고, 0번을 누르면 반복문을 빠져나오고, save메소드를 호출하여 명함철의 명함 정보를 외부텍스트 파일에 저장하고, 프로그램이 종료될 것입니다.<br><br>
+first메소드에 대한 코드와 설명은 이전 글에 자세하게 설명되어 있습니다.<br>
+<a href="https://injae7034.github.io/java/fifteenth/#first" target="_blank">VisitingCardBinder의 first메소드</a>
+
+<br><br>
+6번은 이전, 7번은 다음, 8번은 displayMenu내에서 마지막 명함이 출력될 것입니다.<br><br>
+위의 first메소드 링크에서 first메소드에 대한 설명 아래에 나머지 previous, next, last메소드에 대한 코드와 설명이 같이 있으니 참고하시면 됩니다.<br><br>
+0번을 누르면 while반복문을 빠져나오고, save메소드를 호출하여 명함철의 명함 정보를 외부텍스트 파일에 저장한 다음 프로그램이 종료될 것입니다.<br><br>
 0번을 누르지 않는 한(사용자가 프로그램을 종료시키지 않으면)에는 다른 화면이 출력된 이후에도 while반복문을 빠져나가지 않기 때문에 계속해서 displayMenu화면이 출력되고 사용자로부터 번호를 입력받게 될 것입니다. 
 
 # Main클래스의 displayMenu
@@ -138,14 +162,13 @@ public class Main
 }
 ```
 ## displayMenu 설명
-현재 명함이 없으면(명함철에 명함 개수가 0이면) 비어있는 상태로 출력을 하고, 현재 명함이 있으면(명함철에 명함 개수가 1개 이상이면) getCurrent메소드를 통해 현재 명함을 구하고, 각 필드의 getter메소드를 통해 필드 정보를 구한 뒤 그 내용들을 출력하고(현재 명함을 출력하고), 그 아래에 메뉴창을 출력합니다.<br><br>
+현재 명함이 없으면(명함철에 명함 개수가 0이면) 비어있는 상태로 출력을 하고, 현재 명함이 있으면(명함철에 명함 개수가 최소 1개 이상이면) getCurrent메소드를 통해 현재 명함을 구하고, 각 필드의 getter메소드를 통해 필드 정보를 구한 뒤 그 내용들을 출력하고(현재 명함을 출력하고), 그 아래에 메뉴창을 출력합니다.<br><br>
 현재 명함이 없는 경우는 아래와 같습니다.<br>
 ![비어있는경우displayMenu화면](../../images/2022-01-07-seventeenth/비어있는경우displayMenu화면.jpg)
 <br><br>
 현재 명함이 있는 경우는 아래와 같습니다.<br>
 
 ![명함이있는경우displayMenu화면](../../images/2022-01-07-seventeenth/명함이있는경우displayMenu화면.jpg)
-<br><br>
 
 # Main클래스의 formFoTakingIn
 ```java
@@ -205,7 +228,8 @@ public class Main
 ## formFoTakingIn 설명
 먼저 사용자로부터 콘솔창에 입력을 받기 위해 Scanner를 생성합니다.<br><br>
 이 후 going 문자열의 초기값을 "Y"로 하여 while 반복문의 조건을 만족시킨 다음 while반복문 내부로 들어갑니다.<br><br>
-Scanner클래스의 nextLine메소드를 통해 사용자로부터 문자열을 입력받습니다.<br><br>nextLine 메소드는 사용자가 자신이 원하는 문자열을 입력하고, 엔터키를 쳐야 다음으로 넘어갑니다.<br><br>
+Scanner클래스의 nextLine메소드를 통해 사용자로부터 문자열을 입력받습니다.<br><br>
+nextLine 메소드는 사용자가 자신이 원하는 문자열을 입력하고, 엔터키를 쳐야 다음으로 넘어갑니다.<br><br>
 즉, 성명을 입력하는 칸에서 멈춰있다가 사용자가 문자열을 입력하고 엔터키를 치면 다음으로 직책을 입력하는 란이 콘솔창에 출력됩니다.<br><br>
 먼저 성명을 입력하기 전에 콘솔창입니다.<br>
 ![끼우기성명입력창](../../images/2022-01-07-seventeenth/끼우기성명입력창.jpg)
@@ -220,22 +244,29 @@ Scanner클래스의 nextLine메소드를 통해 사용자로부터 문자열을 
 <br><br>
 여기서 사용자가 "Y"또는 "y"를 누르면 앞에서 nextLine을 통해 읽은 9가지 필드를 매개변수로 하여 VisitingCard객체를 생성하여 VisitingCardBinder에 takeIn합니다.<br><br>
 그리고 반복문을 벗어날 수 있도록 break가 실행됩니다.<br><br>
-break가 실행되면 formFoTakingIn의 반복문을 빠져나가기 때문에 displayMenu함수가 호출되고, displayMenu창이 콘솔 창에 출력될 때는 takeIn에서 새로 끼운 명함이 현재 명함으로 출력됩니다.<br><br>(앞의 VisitingCardBinder 게시글을 보시면 takeIn내부에서 현재 명함을 새로 끼운 명함으로 변경해주기 때문입니다.)<br><br>
-만약에 사용자가 "Y" 또는 "y"이외의 키를 누르면, 즉, 콘솔창에 입력한 정보를 명함철에 끼우지 않는다면 계속할지 여부를 묻는 질문이 출력되고, 여기서 "Y" 또는 "y"를 누르면 formFoTakingIn이 처음부터 다시 실행되고(while반복구조에 의해서) 다른 키를 누르면 formFoTakingIn은 종료되고 다시 displayMeny창이 출력됩니다.<br><br>
+break가 실행되면 formFoTakingIn의 반복문을 빠져나가기 때문에 displayMenu함수가 다시 호출되고, displayMenu가 콘솔에 메뉴창을 출력하고, 현재 명함 정보를 출력할 때는 takeIn에서 새로 끼운 명함이 현재 명함으로 출력됩니다.<br><br>
+(이전 글에서 VisitingCardBinder의 takeIn에 대한 정의를 했는데, takeIn 메소드 내부에서 현재 명함을 새로 끼운 명함으로 변경해주기 때문입니다.)<br><br>
+
+VisitingCardBinder의 takeIn에 대한 자세한 설명은 이전 글에 있으니 참고부탁드립니다.<br>
+<a href="https://injae7034.github.io/java/fifteenth/#takein" target="_blank">VisitingCardBinder의 takeIn메소드</a>
+
+<br><br>
+만약에 사용자가 "Y" 또는 "y"이외의 키를 누르면, 즉, 콘솔창에 입력한 정보를 명함철에 끼우지 않는다면 계속할지 여부를 묻는 질문이 출력되고, 여기서 "Y" 또는 "y"를 누르면 formFoTakingIn이 처음부터 다시 실행되고(while반복구조에 의해서) 다른 키를 누르면 formFoTakingIn은 종료되고 다시 displayMeny창이 출력됩니다.
 
 # formFoTakingIn 사용자 친화적으로 개선하기
 현재 formFoTakingIn에서 사용자의 편의를 위해 개선할 수 있는 방법이 없을까요?<br><br>
 현재 formFoTakingIn에서는 무엇이 불편할까요?<br><br>
 바로 명함의 필드가 9개라서 이를 일일이 다 입력을 하려면 힘들다는 점입니다.<br><br>
 물론 명함의 정보를 입력하려면 다 입력하긴 해야하는데 사용자입장에서 9개를 다치려니 조금 힘들 수 있습니다.<br><br>
-그런 사용자를 위해 프로그래머가 조금 도와주는 기능을 구현할 수 있습니다.<br><br>
-어떻게요? 바로 회사 정보는 중복이 있을 수도 있다는 점을 착안하면 가능합니다.<br><br>
-즉, 개인의 정보는 중복이 있을 수 없기 때문에 사용자가 반드시 다 입력을 해야하지만, 회사의 정보는 이미 명함철의 다른 명함에 같은 회사의 정보가 있을 수도 있습니다.<br><br>즉, 이미 다른 명함철에 현재 입력하려는 회사의 정보가 있으면 사용자가 입력하지 말고, 프로그래머가 이를 대신 입력하도록 해주는 것입니다.<br><br>
+**프로그래머가 사용자들의 이러한 불편함을 해소할 수 있는 기능을 구현**할 수 있습니다.<br><br>
+어떻게요? 바로 **회사 정보는 중복이 있을 수도 있다는 점**을 착안하면 가능합니다.<br><br>
+즉, 개인의 정보는 중복이 있을 수 없기 때문에 사용자가 반드시 다 입력을 해야하지만, 회사의 정보는 이미 명함철의 다른 명함에 같은 회사의 정보가 있을 수도 있습니다.<br><br>즉, **명함철에 현재 입력하려는 회사의 정보가 이미 존재하면 사용자가 이를 다시 일일이 입력하지 말고, 프로그래머가 이를 대신 입력하도록 해주는 것**입니다.<br><br>
 그러면 formFoTakingIn에서 회사정보를 입력할 때 어떻게 명함철에 중복되는 회사 정보가 있는지 알 수 있을까요?
 <br><br>
-사용자가 상호명을 입력한 후에 그 상호명을 바탕으로 회사 정보를 명함철에서 찾으면 되지 않을까요?<br><br>
+사용자가 상호명을 콘솔창에 입력한 후에 엔터키를 쳤을 때, 그 때 입력받은 상호명을 바탕으로 회사 정보를 명함철에서 찾으면 되지 않을까요?<br><br>
 왜냐하면 상호명은 중복이 있을 수 없기 때문입니다.("삼성전자"라는 회사가 2개가 있을 수는 없겠죠;;)<br><br>
-현재 저희가 가지고 있는 VisitngCardBinder의 메소드로는 할 수 없습니다.<br><br>그래서 새로운 메소드인 findCompanyName을 만들어 구현합니다.
+현재 저희가 가지고 있는 VisitngCardBinder의 메소드로는 할 수 없습니다.<br><br>
+그래서 새로운 메소드인 findCompanyName을 만들어 구현합니다.
 
 ## findCompanyName
 ```java
@@ -260,8 +291,9 @@ public class VisitingCardBinder implements Cloneable
 ```
 
 ### findCompanyName 설명
-매개변수로 상호명을 문자열로 입력 받아서 이를 명함철의 첫 번째 명함부터 마지막 명함까지 반복하면서 입력 받은 상호명과 명함의 상호명이 일치하는지 찾습니다.<br><br>명함에서 입력받은 상호명과 일치하는 상호명이 발견되면 즉시 메소드를 종료하면서 해당 명함을 반환합니다.(return visitingCard)<br><br>
-그리고 반복문이 끝나는 동안 일치하는 상호명을 명함철에서 찾지 못하면 null을 반환하도록 합니다.<br><br>
+매개변수로 상호명을 문자열로 입력 받아서 이를 명함철의 첫 번째 명함부터 마지막 명함까지 반복하면서 입력 받은 상호명과 명함의 상호명이 일치하는지 찾습니다.<br><br>
+명함철의 명함 중에서 입력받은 상호명과 일치하는 상호명을 가진 명함이 발견되면 즉시 메소드를 종료하면서 해당 명함을 반환합니다.(return visitingCard)<br><br>
+그리고 반복문이 끝나는 동안 일치하는 상호명을 명함철에서 찾지 못하면 null을 반환하도록 합니다.
 
 # 개선한 formFoTakingIn
 ```java
@@ -343,10 +375,10 @@ public class Main
 ## 개선한 formFoTakingIn 설명
 사용자가 상호명을 입력하고 엔터키를 치기 전까지는 똑같고 그 후부터 코드가 살짝 바꼈습니다.<br><br>
 사용자가 상호명을 입력하고 엔터키를 치는 순간 입력받은 그 상호명을 findCompanyName의 매개변수로 전달합니다.<br><br>
-이 후 반환값을 받는데 이 반환값이 null이라면 일치하는 회사가 없으니 중복된 회사가 없다는 뜻이므로 어쩔 수 없이 사용자가 나머지 회사정보도 입력을 하여야 합니다.<br><br>
-하지만 반환값이 null이 아니면(visitingCard객체가 출력이 되면) 명함철에 중복되는 회사 정보가 이미 있다는 뜻이고, 반환 받은 visitingCard객체의 참조변수값을 이용해 회사 정보에 접근하여 주소, 전화번호, 팩스번호, 홈페이지주소를 getter메소드를 통하여 구한 다음에 사용자 대신에 printf로 콘솔창에 출력해줍니다.<br><br>
-이렇게 되면 회사 정보가 중복될 경우 상호명까지만 치면 나머지는 프로그램이 알아서 출력해주기 때문에 사용자 입장에서는 편리합니다.<br><br>
-또한 사용자가 입력할 때 실수로 상호명은 일치하지만 나머지 필드(주소, 전화번호, 팩스번호, 홈페이지주소) 중 하나라도 오타가 나면 나중에 프로그램상에서 에러가 생길 수 있는데 이러한 문제점을 사전에 차단할 수 있습니다.<br><br>
+이 후 반환값을 받는데 이 **반환값이 null이라면 일치하는 회사가 없으니 중복된 회사가 없다는 뜻이므로 어쩔 수 없이 사용자가 나머지 회사정보도 입력**을 하여야 합니다.<br><br>
+하지만 **반환값이 null이 아니면(visitingCard객체가 출력이 되면) 명함철에 중복되는 회사 정보가 이미 있다**는 뜻이고, 반환 받은 visitingCard객체의 참조변수값을 이용해 해당 회사 정보에 접근하여 주소, 전화번호, 팩스번호, 홈페이지주소를 getter메소드를 통하여 구한 다음에 **사용자 대신에 printf로 콘솔창에 출력**해줍니다.<br><br>
+이렇게 되면 **회사 정보가 중복될 경우 상호명까지만 치면 나머지는 프로그램이 알아서 출력**해주기 때문에 사용자 입장에서는 편리합니다.<br><br>
+또한 편의성 외에도 이러한 기능이 없다면 사용자는 이미 명함철에 중복되는 회사 정보라도 매번 입력할 수 밖에 없는데 이 때 사용자의 실수로 상호명은 일치하지만 나머지 필드(주소, 전화번호, 팩스번호, 홈페이지주소) 중 하나라도 오타가 나면 나중에 프로그램상에서 에러가 생길 수 있는데 이러한 문제점을 사전에 차단할 수 있습니다.
 
 # Main클래스의 formFoFinding
 ```java
@@ -446,16 +478,18 @@ public class Main
 ![찾는성명기다리는중](../../images/2022-01-07-seventeenth/찾는성명기다리는중.jpg)
 <br><br>
 이후 사용자가 찾고자 하는 성명을 입력한 뒤에 엔터키를 치면 사용자로부터 입력받은 문자열을 name에 저장하고 이를 VisitingCardBinder의 find메소드의 매개변수로 전달합니다.<br><br>
-그러면 find는 VisitingCardBinder의 명함중에서 name과 일치하는 개인 성명을 가진 명함을 찾아서 그 참조변수(주소)값을 ArrayList<VisitingCard>에 저장한 뒤에 이를 반환합니다.<br><br>
+그러면 find는 VisitingCardBinder의 명함중에서 name과 일치하는 개인 성명을 가진 VisitingCard객체를 찾아서 VisitingCard객체의 참조변수(주소)값을 ArrayList에 저장한 뒤에 이를 반환합니다.<br><br>
 예를 들어 "홍길동"이라고 입력했을 때 2개의 명함을 찾은 경우입니다.<br>
 
 ![찾는명함입력했을때](../../images/2022-01-07-seventeenth/찾는명함입력했을때.jpg)
 <br><br>
 
-예를 들어 "윤길동"이라고 입력했을 때 "운길동"과 일치하는 개인 성명을 가진 명함이 없는 경우입니다.<br>
+예를 들어 "윤길동"이라고 입력했을 때 "윤길동"과 일치하는 개인 성명을 가진 명함이 없는 경우입니다.<br>
 ![찾는성명이없는경우](../../images/2022-01-07-seventeenth/찾는성명이없는경우.jpg)
 <br><br>
-찾은 명함이 있을 경우, 즉,  ArrayList<VisitingCard> indexes의 size가 0보다 크면 찾은 명함을 출력해주고, 찾은 명함이 없으면 찾은 명함이 없다고 출력해줍니다.<br><br>
+찾은 명함이 있을 경우, 즉,  VisitingCard의 참조변수를 배열요소로 하는 ArrayList객체인 indexes의 size가 0보다 크면 찾은 명함을 출력해주고, 찾은 명함이 없으면 찾은 명함이 없다고 출력해줍니다.
+
+# formFoFinding 존재 이유 : 선택
 여기서 찾은 명함이 있는 경우 생각해볼 사항이 있습니다.<br><br>
 사용자가 명함철에서 명함을 찾은 이유는 무엇일까요?<br><br>
 그 명함이 필요한데 명함이 어디에 위치하는지 모르기 때문에 찾은 겁니다.<br><br>
@@ -467,9 +501,9 @@ public class Main
 그러나 현재 저희가 구현한 이동 메소드들에는 구체적으로 원하는 위치를 입력하여 거기로 바로 이동하는 메소드가 없습니다.<br><br>
 그래서 새로운 메소드를 만들어야 합니다.<br><br>
 새로운 메소드로 move(Visitingcard visitngcard)를 구현합니다.<br><br>
-즉, 이동하고자 하는 명함의 참조변수값을 매개변수로 전달하면 명함철의 현재 명함(current)의 참조변수값을 입력받은 매개변수로 바꿔주고(이동하고) 이 참조변수값을 반환하는 메소드입니다.<br><br>
+즉, 이동하고자 하는 명함의 참조변수(주소)값을 매개변수로 전달하면 명함철의 현재 명함(current)의 참조변수값을 입력받은 매개변수로 바꿔주고(이동하고), 이 참조변수값을 반환하는 메소드입니다.
 
-### move
+## move
 ```java
 public class VisitingCardBinder implements Cloneable
 {
@@ -485,21 +519,23 @@ public class VisitingCardBinder implements Cloneable
     }
 }
 ```
-
+## 선택기능이 추가된 formFoFinding설명
 이제 다시 formFoFinding으로 돌아가서 "찾은 명함을 선택하시겠습니까?"라는 질문에 사용자가 "Y" 또는 "y"를 누르면 while(true)라는 무한 반복에 들어갑니다.<br><br>
 그리고 사용자로부터 찾은 명함 중에 몇번째 명함을 선택할지 입력을 받습니다.<br><br>
 찾은 명함이 1개인 경우 당연히 1번만 입력받을 수 있고, 동명이인이 있어서 찾은 명함이 여래 개인 경우 최대 명함의 개수만큼 번호를 입력받아서 선택할 수 있습니다.<br><br>
 그리고 사용자로부터 입력받은 숫자에 -1을 합니다.<br><br>
 그 이유는 배열의 시작은 0부터이지만 인간은 1부터 시작해서 번호를 매기기 때문에 인간이 입력한 숫자를 다시 배열기준으로 맞춰야 ArrayIndexOutOfBoundsException에러가 발생하지 않습니다.<br><br>
 또한 사용자가 실수로 번호를 잘못 입력하는 경우에도 ArrayIndexOutOfBoundsException에러가 발생하여 프로그램이 종료되기 때무에 이를 방지하기 위해 조건을 둡니다.<br><br>
-index - 1 이 반영된 상태에서 if(index < indexes.size() && index >= 0)라는 조건을 통해서 사용자가 올바른 숫자를 입력한 경우에만 ArrayList에서 배열요소(VisitingCard)에 접근한 다음에 해당 명함으로 이동시키는 move메소드를 호출합니다.<br><br>
-그리고 formFoFinding화면을 종료시키기 위해 return을 이용합니다.<br><br>
-그러면 다시 displayMenu화면 창이 뜨고 현재 명함(current)을 출력할텐데 이 때 아까 move로 현재 명함을 바꿔놨기 때문에 저희가 formFoFinding에서 찾은 명함이 출력됩니다.<br>
+index - 1 이 반영된 상태에서 **if(index < indexes.size() && index >= 0)**라는 조건을 통해서 사용자가 올바른 숫자를 입력한 경우에만 ArrayList에서 배열요소(VisitingCard)에 접근하여 해당 명함으로 이동시키는 move메소드를 호출합니다.<br><br>
+move메소드 호출 이후에 formFoFinding화면을 종료시키기 위해 return을 이용합니다.<br><br>
+그러면 다시 displayMenu화면 창이 뜨고 현재 명함(current)을 출력할텐데 이 때 아까 move로 현재 명함을 바꿔놨기 때문에 저희가 formFoFinding에서 찾은 명함이 출력됩니다.<br><br>
 ![찾은명함선택시화면](../../images/2022-01-07-seventeenth/찾은명함선택시화면.jpg)
 <br><br>
-해당 조건을 벗어나는 경우에는 사용자가 번호를 잘못 입력했다는 뜻이기 때문에 else처리하여 사용자에게 번호를 잘못 입력했음을 알려주는 메세지를 출력합니다.<br><br>
-이 후 while무한반복의 한 사이클이 끝나는데 번호를 올바르게 선택했으면 return을 통해 formFoFinding이 종료되면서 자동으로 while무한반복도 탈출하게 되고, 번호를 잘못입력했을 경우는 while무한반복문 내부로 들어가서 번호를 선택하는 창이 다시 뜨게 됩니다.<br><br>
-찾은 게 없거나, 찾았어도 선택을 안하겠다고 한 경우 계속할지 여부를 묻는 창이 뜨고, 사용자가 "Y" 또는 "y"를 누르면 다시 반복문에 들어가고, 이외의 키를 누르면 formFoFinding이 종료되어 displayMenu로 돌아가게 됩니다.<br><br>
+
+**if(index < indexes.size() && index >= 0)**라는 조건을 벗어나는 경우에는 사용자가 번호를 잘못 입력했다는 뜻이기 때문에 else처리하여 사용자에게 번호를 잘못 입력했음을 알려주는 메세지를 출력합니다.<br><br>
+이러한 방식으로 while무한반복의 한 사이클이 돌아가는데 아까 사용자가 번호를 올바르게 선택했다면 return을 통해 formFoFinding이 종료되면서 자동으로 while무한반복도 탈출하게 됩니다.<br><br>
+사용자가 번호를 잘못 입력했다면 while무한반복문 내부로 들어가서 번호를 선택하는 창이 다시 뜨게 됩니다.<br><br>
+찾은 게 없거나, 찾았어도 선택을 안하겠다고 한 경우 계속할지 여부를 묻는 창이 뜨고, 사용자가 "Y" 또는 "y"를 누르면 다시 반복문에 들어가고, 이외의 키를 누르면 formFoFinding이 종료되어 displayMenu로 돌아가게 됩니다.
 
 # Main클래스의 formFoTakingOut
 ```java
@@ -546,29 +582,28 @@ public class Main
 ```
 
 ## formFoTakingOut 설명
-
 formFoTakingOut은 실행되자 마자 우선 현재 명함이 있는지부터 체크합니다.<br><br>
-**현재 명함이 없으면 명함철에 명함이 하나도 없다**는 말인데 명함철에 명함이 하나도 없으면 꺼낼 명함이 없기 때문에 바로 formFoTakingOut을 종료하고 다시 displayMenu창을 출력시킵니다.<br><br>
+**현재 명함이 없으면 명함철에 명함이 하나도 없다**는 말인데 **명함철에 명함이 하나도 없으면 꺼낼 명함이 없기 때문에 바로 formFoTakingOut을 종료하고 다시 displayMenu창을 출력**시킵니다.<br><br>
 현재 명함이 있으면 현재명함(current)을 매개변수로 전달하여 takeOut메소드를 호출한 다음에 꺼낸 명함을 반환받습니다.<br><br>
 이 후 꺼낸 명함의 정보를 사용자에게 알려주기 위해 꺼낸 명함의 getter 메소드를 통해 명함의 정보를 콘솔창에 출력합니다.<br><br>
-이 후 사용자에게 명함을 다시 끼울지 말지를 물어보고 사용자가 명함을 다시 끼우겠다고 하면 꺼낸 명함을 매개변수로 전달하여 takeIn메소드를 통해 다시 명함을 명함철에 끼웁니다.<br><br>
+이 후 사용자에게 명함을 다시 끼울지 말지를 물어보고 사용자가 명함을 다시 끼우겠다고 하면 꺼낸 명함을 매개변수로 전달하여 takeIn메소드를 통해 명함철의 마지막 위치에 꺼낸 명함을 다시 끼웁니다.<br><br>
 formFoTakingOut은 반복문이 없기 때문에 순차적으로 진행이 되고, 그 진행이 끝나면 formFoTakingOut화면은 종료되고 다시 displayMenu화면이 출력됩니다.<br><br>
-즉, 다시 끼우기를 하든 안하든 formFoTakingOut은 종료됩니다.<br><br>
-
+즉, 다시 끼우기를 하든 안하든 formFoTakingOut은 종료됩니다.
 
 # 마치며
-
+나머지(arrange, first, previous, next, last)는 main에서 설명한 것처럼 따로 화면이 존재하지 않고, 다만 해당 메소드 기능을 수행한 후에 현재 명함이 바뀐 결과를 displayMenu를 통해 콘솔창에 출력할 뿐이라 더이상의 설명은 필요없을 것 같습니다.<br><br>
 VisitingCardBinder의 CUI화면의 경우 AddressBook과는 다르게 테이블형식을 이용하지 않았습니다.<br><br>
 그러다 보니 전체보기 같은 화면창은 따로 구성하지 않았습니다.<br><br>
 배열은 테이블 형식으로 전체를 조감할 수 있는 반면에 연결리스트의 경우 현재 화면에 하나의 명함만 보여주다 보니 조금은 답답한 면이 있을 수 있습니다.<br><br>
-그래서 원래 C나 C++에서는 GUI프로그래밍을 할 때(WIN32 API, MFC)는 표형식은 아니더라도 연결리스트에서도 전체를 볼 수 있도록, 그리고 검색속도 향상을 시키기 위해 이분검색트리를 추가하였습니다.<br>
+그래서 원래 C나 C++에서는 GUI프로그래밍을 할 때(WIN32 API, MFC)는 표형식은 아니더라도 연결리스트에서도 전체를 볼 수 있도록, 그리고 검색속도 향상을 시키기 위해 이분검색트리를 추가하였습니다.<br><br>
 
 [이분검색트리활용](../../images/2022-01-07-seventeenth/이분검색트리활용.jpg)
 
 <br><br>
-옆에 있는 저 트리를 이용하면 회사를 클릭했을 때 회사에 소속된 개인리스트가 펼쳐지고, 개인의 성명을 클릭하면 해당 명함이 바로 화면에 출력됩니다.<br><br>회사에 소속된 명함이 몇 개 있는지를 회사에 소속된 개인의 성명 수로 알 수 있으며 회사가 몇 개 있는지도 직관적으로 바로 알 수 있어서 명함철의 전체적인 조감을 하기 좋습니다.<br><br> 
+옆에 있는 저 트리를 이용하면 회사를 클릭했을 때 회사에 소속된 개인리스트가 펼쳐지고, 개인의 성명을 클릭하면 해당 명함이 바로 화면에 출력됩니다.<br><br>
+회사에 소속된 명함이 몇 개 있는지를 회사에 소속된 개인의 성명 수로 알 수 있으며 회사가 몇 개 있는지도 직관적으로 바로 알 수 있어서 명함철의 전체적인 조감을 하기 좋습니다.<br><br> 
 그러나 CUI에서는 이 트리를 어떻게 표현해야할지 좀 막막하네요.<br><br>
-그렇다고 Swing이나 JavaFx를 공부할 수도 없고... 좀 고민을 해보겠습니다.<br><br>
+그렇다고 자바GUI인 Swing이나 JavaFx를 공부할 수도 없고... 좀 고민을 해보겠습니다.<br><br>
 우선 다음으로는 이 CUI프로그래밍을 MySQL과 연동시켜 작동하는 글을 올리도록 하겠습니다.<br><br>
 잘못된 점이나 궁굼한 사항이 있으시면 댓글이나 이메일로 남겨주시면 답장드리겠습니다.<br><br>
 긴 글 읽어주셔서 감사합니다^^
