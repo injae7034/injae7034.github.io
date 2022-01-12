@@ -403,7 +403,7 @@ return으로 반환되는 복사본인 VisitingCard는 이제 원본과는 별�
 즉, 성공적으로 깊은 복사가 되었습니다.<br><br>
 이에 대한 자세한 설명은 후속편인 VisitingCardBinder를 구현할 때 메모리맵을 첨부하여 설명하도록 하겠습니다.<br><br>
 아래 링크가 후속편 링크이니 이를 참고하시면 됩니다.<br>
-<a href="https://injae7034.github.io/java/fifteenth/" target="_blank">Java프로젝트하면서 LinkedList에서 얕은 복사 깊은 복사 설명하기</a>
+<a href="https://injae7034.github.io/java/fifteenth/#clone" target="_blank">Java프로젝트하면서 LinkedList에서 얕은 복사 깊은 복사 설명하기</a>
 
 ## equals 메소드 
 ```java
