@@ -550,6 +550,7 @@ public class Main
     private static AddressBook addressBook;
     public static void update(int index)
     {
+        //데이터베이스에 있는 전체 개인들의 코드를 순차적으로 저장함.
         String sql = "SELECT Personal.code FROM Personal;";
         try(Connection con = DriverManager.getConnection("jdbc:mysql:" +
                 "//localhost:3306/AddressBook?serverTimezone=Asia/Seoul",
@@ -557,15 +558,22 @@ public class Main
             PreparedStatement pstmt = con.prepareStatement(sql);
             ResultSet rs = pstmt.executeQuery();)
         {
+            //매개변수로 입력 받은 위치의 개인을 구함.
             Personal personal = addressBook.getAt(index);
             String code = null;
             int i= 0;
+            //매개변수로 입력 받은 위치만큼 반복하면서 개인코드로 이동함.
             while(i <= index)
             {
-                rs.next();
-                code = rs.getString(1);
+                //rs를 다음으로 이동시키고 다음이 있으면
+                if(rs.next())
+                {
+                    //개인 코드를 구한다.
+                    code = rs.getString(1);
+                }
                 i++;
             }
+            //데이터베이스에서 개인코드에 해당하는 정보를 수정한다.
             sql = String.format("UPDATE Personal SET address='%s'," +
                             " telephoneNumber='%s', emailAddress='%s'" +
                             " WHERE code='%s';",
@@ -581,21 +589,24 @@ public class Main
 }
 ```
 ### update 코드 설명
-sql문은 전체코드를 얻어 오는 구문입니다.<br><br>
+위의 sql문은 데이터베이스에서 전체 개인코드를 구하는 구문입니다.<br><br>
 이 sql문으로 **PreparedStatement**를 생성하여 **executeQuery**를 통해 **ResultSet**객체(전체코드를 테이블형식으로 저장)를 생성합니다.<br><br>
 **update호출 시에 매개변수로 입력받는 index**는 addressBook에서 correct한 후에 반환 받는 index(주소록에서 내용을 변경한 개인 배열위치)인데 이를 매개변수로 이용하여 addressBook에서 personal의 정보를 얻어옵니다.
-<br>
+<br><br>
 
 ```java
 index = addressBook.correct(indexes.get(index), address, telephoneNumber, emailAddress);
 update(index);
 ```
-<br>
-**while(i <= index)**을 통해 입력받은 index까지 반복을 돌립니다.<br><br>
-반복구조 내부에세는 **rs.next();**를 통해 rs를 이동시키면서 **code = rs.getString(1);**(코드 데이터 하나만 저장되어 있음.)를 통해 code를 얻어옵니다.<br><br>
-이 반복구조를 벗어날 때 code에는 주소록index와 일치하는 개인의 code가 저장되어 있습니다.<br><br>
-왜냐하면 주소록과 데이터베이스의 저장 순서가 동일하기 때문에 주소록의 index만큼 반복을 돌리면서 rs가 순차적으로 이동하면 index에 도착했을 때 code를 가지는 개인은 주소록과 동일할 수밖에 없기 때문입니다.<br><br>
-이렇게 code를 얻고 나면 **String.format**으로 새로운 쿼리문(변경)을 만들어 준 다음에 이를 실행(**pstmt.executeUpdate(sql)**)합니다. 그러면 데이터베이스에도 성공적으로 해당 코드의 개인 데이터 변경이 이루어지게 됩니다.
+<br><br>
+
+**while(i <= index)**
+을 통해 입력받은 index까지 반복을 돌리면서 rs에서 index와 일치하는 개인의 코드로 이동합니다.<br><br>
+반복구조 내부에서는 **rs.next();**를 통해 rs를 이동시키면서 다음데이터가 있으면 **code = rs.getString(1);**(코드 데이터 하나만 저장되어 있음.)를 통해 code를 얻어옵니다.<br><br>
+이 **반복구조를 벗어날 때 code에는 주소록 index와 일치하는 개인의 code가 저장**되어 있습니다.<br><br>
+왜냐하면 **주소록과 데이터베이스의 저장 순서가 동일하기 때문에** 주소록의 index만큼 반복을 돌리면서 rs가 순차적으로 이동하면 index에 도착했을 때 code를 가지는 개인은 주소록과 동일할 수밖에 없기 때문입니다.<br><br>
+이렇게 code를 얻고 나면 **String.format**으로 새로운 쿼리문(변경)을 만들어 준 다음에 이를 실행(**pstmt.executeUpdate(sql)**)합니다.<br><br>
+그러면 데이터베이스에도 성공적으로 해당 코드의 개인 데이터 변경이 이루어지게 됩니다.
 
 ## delete 코드
 ```java
@@ -615,8 +626,12 @@ public class Main
             int i= 0;
             while(i <= index)
             {
-                rs.next();
-                code = rs.getString(1);
+                //rs를 다음으로 이동시키고 다음이 있으면
+                if(rs.next())
+                {
+                    //개인 코드를 구한다.
+                    code = rs.getString(1);
+                }
                 i++;
             }
             sql = String.format("DELETE FROM Personal WHERE code = '%s';", code);
@@ -645,7 +660,7 @@ delete(indexes.get(index));
 주소록에서는 이미 index에 해당하는 개인이 지워졌지만, 
 
 **아직 데이터베이스에서는 해당하는 개인이 남아있기 때문에** while(i <= index) 반복구조(내부에서 ResultSet의 이동)를 통해 데이터베이스에서 **해당하는 개인(주소록에서 지워진 개인)**의 코드를 알아낼 수 있습니다.<br><br>
-그리고 새롭게 만든 삭제 쿼리문을 실행시킴으로써 데이터베이스에서 주소록에서 지운 개인과 동일한 개인을 지울 수 있습니다.
+그리고 이렇게 알아낸 개인의 코드를 이용하여 새롭게 만든 삭제 쿼리문을 실행시킴으로써 데이터베이스에서 주소록에서 지운 개인과 동일한 개인을 지울 수 있습니다.
 
 ## repalce 코드
 ```java
