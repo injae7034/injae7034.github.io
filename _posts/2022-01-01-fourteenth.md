@@ -1,6 +1,6 @@
 ---
 layout: single
-title:  "Java로 명함철 구현하기 - Object 메소드 오버라이딩하기"
+title:  "Java프로젝트하면서 Object 메소드 오버라이딩 개념 익히기"
 categories: Java
 tag: [Java, 명함철, 프로젝트, VisitingCard, Cloneable, toString, equals, 오버라이딩, 얕은 복사, 깊은 복사]
 toc: true
