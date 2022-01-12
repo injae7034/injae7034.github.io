@@ -1,6 +1,6 @@
 ---
 layout: single
-title:  "Java로 명함철 구현하기 - CUI Programming"
+title:  "Java프로젝트하면서 테스트하기 위해 콘솔을 이용한 CUI Programming 구현하기"
 categories: Java
 tag: [Java, 명함철, 프로젝트, VisitingCardBinder, CUI]
 toc: true
