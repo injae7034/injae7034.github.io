@@ -1,6 +1,6 @@
 ---
 layout: single
-title:  "Java프로젝트하면서 입출력에서 RandomAccessFile를 쓰는 이유와 사용 방법 설명하기"
+title:  "Java프로젝트하면서 입출력에서 RandomAccessFile을 쓰는 이유와 사용 방법 설명하기"
 categories: Java
 tag: [Java, 명함철, 프로젝트, VisitingCardBinder, Writer, RandomAccessFile, 자바입출력]
 toc: true
