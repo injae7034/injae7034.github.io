@@ -161,7 +161,7 @@ VALUES('김길동', '과장', 01049790464', Kim@naver.com', 'P0002', 'C0001');<b
 SELECT Company.*, Personal.* FROM Company, Personal WHERE Company.companyCode = Personal.companyCode AND Company.name = '삼성전자';<br><br>
 위의 SELECT문을 입력하면 Company테이블에서 name이 "삼성전자"이고, Company테이블에서 companyCode와 Personal테이블에서 companyCode과 같은 개인의 모든 정보를 회사 정보와 함께 출력합니다.<br><br>
 아래 이미지는 실제 제가 만들어놓은 데이터베이스에서 위의 쿼리문을 입력해서 찾은 결과입니다.<br><br>
-![SELECT문 결과](../../images/2022-01-13-eighteenth/SELECT문 결과.jpg)
+![SELECT문 결과](../../images/2022-01-13-eighteenth/SELECT문 결과.JPG)
 <br><br>
 
 ## INNER JOIN을 이용한 SELECT
@@ -169,12 +169,12 @@ SELECT Company.*, Personal.* FROM Company, Personal WHERE Company.companyCode = 
 SELECT Company.*, Personal.* FROM Company INNER JOIN Personal ON Company.companyCode = Personal.companyCode WHERE Company.companyCode = 'C0001';
 <br><br>
 위의 스크립팅처럼 INNER JOIN을 활용한 결과 아래처럼 같은 결과를 검색하는 것을 확인할 수 있습니다.<br><br>
-![INNERJOIN이용한SELECT결과](../../images/2022-01-13-eighteenth/INNERJOIN이용한SELECT결과.jpg)
+![INNERJOIN이용한SELECT결과](../../images/2022-01-13-eighteenth/INNERJOIN이용한SELECT결과.JPG)
 <br><br>
 SELECT Company.*, Personal.* FROM Company INNER JOIN Personal ON Company.companyCode = Personal.companyCode;
 <br><br>
 위의 쿼리문을 입력하면 데이터베이스에 있는 회사와 개인의 데이터를 전부 출력하는데 이 때 회사와 개인이 서로 연결된 상태로 출력됩니다다.<br><br>
-![INNERJOIN이용한전체SELECT결과](../../images/2022-01-13-eighteenth/INNERJOIN이용한전체SELECT결과.jpg)
+![INNERJOIN이용한전체SELECT결과](../../images/2022-01-13-eighteenth/INNERJOIN이용한전체SELECT결과.JPG)
 
 ## Delete
 DELETE FROM Personal WHERE code = 'P0001';<br><br>
