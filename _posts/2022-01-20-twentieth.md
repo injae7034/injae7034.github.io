@@ -12,6 +12,7 @@ toc_sticky: true
 이번 시간에는 저번 시간에 만든 Date클래스(LocalDate를 활용하여 커스터마이징한 Date)를 활용하여 가계부(AccountBook)프로그램을 구현하려고 합니다.<br>
 <a href="https://injae7034.github.io/java/nineteenth/"
 target="_blank">Java의 LocalDate를 활용해서 나만의 Date클래스 만들기</a>
+
 <br><br>
 
 가계부(AccountBook)는 파일이자 컨트롤이기 때문에 데이터를 저장하고 있는 entity 클래스를 먼저 구현하려고 합니다.<br><br>
