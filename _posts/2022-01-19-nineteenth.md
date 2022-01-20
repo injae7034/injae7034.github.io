@@ -151,7 +151,7 @@ public class Date
 }
 ```
 매개변수를 1개 가지는 previousDate는 오늘 날짜를 기준으로 매개변수로 입력받은 날짜만큼 minusDays를 시킨 다음 그 날짜를 기준으로 '년', '월', '일', '요일'을 구하여 이를 바탕으로 새로운 Date 클래스를 생성하여 반환합니다.
-### 매개변수 2개(int 자료형 변수, Date객체 참조변수값)를 가지는 previousDate
+### 매개변수 2개(Date객체 참조변수값, int 자료형 변수)를 가지는 previousDate
 ```java
 public class Date
 {
@@ -185,7 +185,7 @@ public class Date
 ```
 매개변수를 1개 가지는 nextDate는 오늘 날짜를 기준으로 매개변수로 입력받은 날짜만큼 plusDays를 시킨 다음 그 날짜를 기준으로 '년', '월', '일', '요일'을 구하여 이를 바탕으로 새로운 Date 클래스를 생성하여 반환합니다.
 
-### 매개변수 2개(int 자료형 변수, Date객체 참조변수값)를 가지는 nextDate
+### 매개변수 2개(Date객체 참조변수값, int 자료형 변수)를 가지는 nextDate
 ```java
 public class Date
 {
