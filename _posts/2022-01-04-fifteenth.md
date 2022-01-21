@@ -75,7 +75,7 @@ public class VisitingCardBinder
 ```
 ## takeIn 설명
 우선 명함철(VisitingCardBinder)에 끼울 명함(visitingCard)를 매개변수로 입력 받습니다.<br><br>
-입력 받은 명함을 LinkedList<VisitingCard>의 add 메소드를 호출하면서 매개변수로 전달합니다.<br><br>
+입력 받은 명함을 LinkedList\<VisitingCard\>의 add 메소드를 호출하면서 매개변수로 전달합니다.<br><br>
 그리고 명함철의 명함 개수를 늘려주고, 현재 명함의 위치를 마지막 명함으로 설정합니다.<br><br>
 그 이유는 LinkedList가 add를 시킬 때 순차적으로 추가하기 때문에 가장 최근에 들어온 visitingCard가 마지막으로 설정되기 때문입니다.<br><br>
 그 다음 현재 명함의 위치를 반환합니다.
@@ -141,7 +141,7 @@ LinkedList<E>의 이너클래스인 Node<E>는 내부에 자료형이 E인 item�
 E를 현재 VisitingCard로 정했기 때문에 item이 VisitingCard의 객체를 저장하는 주소입니다.
 ### LinkedList<E>의 linkLast 설명
 VisitingCard객체를 매개변수로 입력 받아서 내부에서 새로운 Node객체인 newNode를 생성합니다.<br><br>
-newNode를 생성할 때 매개변수로 LinkedList<VisitingCard>의 현재 마지막 노드의 주소를 prev로 입력받습니다.(마지막 위치에 추가되기 때문에 현재 LinkedList의 마지막 위치가 자연스럽게 마지막 전의 위치가 되기 때문)<br><br>
+newNode를 생성할 때 매개변수로 LinkedList\<VisitingCard\>의 현재 마지막 노드의 주소를 prev로 입력받습니다.(마지막 위치에 추가되기 때문에 현재 LinkedList의 마지막 위치가 자연스럽게 마지막 전의 위치가 되기 때문)<br><br>
 Node의 생성자에서 next의 매개변수로는 null을 입력받습니다.(LinkedList의 마지막에 추가되기 때문에 다음이 있을 수 없음.)<br><br>
 Node의 생성자에서 item으로는 linkLast에서 매개변수로 입력받은 VisitingCard객체를 입력받습니다.<br><br>
 LinkedList의 last는 새로 생성한 newNode로 변경하여주고, 현재 LinkedList에 node가 newNode하나뿐이면 first도 newNode를 가리키도록 설장하고, 그게 아니면 newNode를 생성하기 전까지 마지막 node였던 'l'의 next를 null에서 newNode로 변경해줍니다.<br><br>
@@ -169,7 +169,7 @@ public E getLast() {
 우리는 이 origin을 통해 힙영역에 할당된 VisitingCardBinder에 접근할 수 있습니다.<br><br>
 VisitingCardBinder는 LinkendList<VistingCard>의 참조변수인 visitingCards를 가지고 있고, 현재명함의 주소값을 저장하는 참조변수인 current와 현재 명함철에 끼워진 명함의 개수를 의미하는 length를 멤버로 가지고 있습니다.<br><br>
 현재 명함철에 끼운 명함이 하나도 없기 때문에 current는 null을, length는 0을 저장하고 있습니다.<br><br>
-LinkedList<VisitingCard>의 멤버인 size도 역시 끼워진 Node가 없기 떄문에 size는 0, first와 last는 null을 저장하고 있습니다.<br><br>
+LinkedList\<VisitingCard\>의 멤버인 size도 역시 끼워진 Node가 없기 떄문에 size는 0, first와 last는 null을 저장하고 있습니다.<br><br>
 이 상태에서 Main에서 VisitingCard 객체를 생성합니다.<br><br>
 객체는 필드가 너무 많아서 간추려서 Personal의 경우 name = "홍길동", Compamy의 경우 name = "삼성전자"를 가지고 있는 것만 표시하고 나머지는 생략합니다.<br><br>
 
@@ -183,10 +183,10 @@ LinkedList<VisitingCard>의 멤버인 size도 역시 끼워진 Node가 없기 �
 새로 생성한 이 VisitingCard객체를 매개변수로 하여 origin에서 takeIn메소드를 호출합니다.<br><br>
 takeIn은 다시 add메소드를 호출하면서 VisitingCard객체의 매개변수를 전달해줍니다.<br><br>
 add는 다시 내부에서 linkLast라는 메소드를 호출하면서 VisitingCard객체의 매개변수를 전달해줍니다.<br><br>
-이제 linkLast의 내부에서 'l'은 마지막 Node의 위치를 저장하라고 하는데 현재 LinkedList<VisitingCard>의 객체인 visitingCards에는 아무것도 연결된 Node가 없기 때문에 last 값이 null입니다.<br><br>
+이제 linkLast의 내부에서 'l'은 마지막 Node의 위치를 저장하라고 하는데 현재 LinkedList\<VisitingCard\>의 객체인 visitingCards에는 아무것도 연결된 Node가 없기 때문에 last 값이 null입니다.<br><br>
 그래서 'l'은 처음에 null이 저장됩니다.<br><br>
 그리고 새로운 노드(newNode)를 생성하는데 이때 prev값으로 l(=null)이 들어가기 때문에 새로 생성되는 newNode는 prev와 next는 모두 null이고, item은 visitingCard의 참조변수값을 가집니다.<br><br>
-newNode를 생성했으니 이제 이를 LinkedList<VisitingCard>객체와 연결시키기 위해 
+newNode를 생성했으니 이제 이를 LinkedList\<VisitingCard\>객체와 연결시키기 위해 
 
 **last = newNode**를 하는데 이로써 새로 생성한 newNode를 LinkedList의 마지막 node로 설정됩니다.<br><br>
 그리고 현재 l=null이기 때문에 선택문으로 들어가서 first역시 newNode를 가리키게 됩니다.<br><br>
@@ -300,8 +300,8 @@ public class Company implements Cloneable
 ![VisitingCardBinder clone 메모리맵1](../../images/2022-01-04-fifteenth/VisitingCardBinder clone 메모리맵1.jpg)
 먼저 Main에 VisitingCardBinder의 객체인 origin이 있고, 아까 메모리맵처럼 현재 takeIn을 3번하여, 명함이 3개 끼워져 있는 상태입니다.<br><br>
 이 상태에서 **copy = origin.clone()**을 호출하면 먼저 VisitingCardBinder의 clone메소드가 호출됩니다.<br><br>
-여기서 **VisitingCardBinder visitingCardBinder = new VisitingCardBinder();**을 통해 새로운 VisitingCardBinder객체를 생성하여 힙에 할당합니다.<br><br>현재 새로 생성된 이 VisitingCardBinder는 메모리맵에서 보시다시피 current는 null이고 length는 0이며 LinkedList<VisitingCard>객체인 visitingCards역시 size는 0이고 first와 last 모두 null인 상태입니다.<br><br>
-다음으로 for each 반복문을 통해 origin의 LinkedList<VisitingCard>에서 VisitingCard객체를 하나씩 가져오면서 여기서 VisitingCard의 clone메소드를 호출합니다.<br><br>
+여기서 **VisitingCardBinder visitingCardBinder = new VisitingCardBinder();**을 통해 새로운 VisitingCardBinder객체를 생성하여 힙에 할당합니다.<br><br>현재 새로 생성된 이 VisitingCardBinder는 메모리맵에서 보시다시피 current는 null이고 length는 0이며 LinkedList\<VisitingCard\>객체인 visitingCards역시 size는 0이고 first와 last 모두 null인 상태입니다.<br><br>
+다음으로 for each 반복문을 통해 origin의 LinkedList\<VisitingCard\>에서 VisitingCard객체를 하나씩 가져오면서 여기서 VisitingCard의 clone메소드를 호출합니다.<br><br>
 그러면 스택영역에 VisitingCard clone메소드 영역이 생성되고, VisitingCardBinder의 clone은 잠시 멈춥니다.<br><br>
 VisitingCard clone내부에서 VisitingCard visitingCard = new VisitingCard(this.personal.clone(), this.company.clone());를 통해 먼저 personal의 clone메소드가 호출되고 다음으로 company의 메소드가 호출됩니다.<br><br>
 Personal의 clone메소드는 return (Personal)super.clone();한문장인데 이를 통해 자신과 똑같은 내용의 Personal객체가 깊은 복사가 되어(모든 필드가 String이기 때문에) 그 참조변수값이 반환됩니다.<br><br>
@@ -354,10 +354,10 @@ public class VisitingCardBinder implements Cloneable
 ```
 ## find 설명
 명함철에서 개인의 이름을 기준으로 명함을 찾고 싶을 때 사용하는 메소드입니다.<br><br>
-이름을 매개변수로 하고, 내부에서는 ArrayList<VisitingCard>의 객체인 indexes를 생성합니다.<br><br>
-예를 들어, "홍길동"이라는 이름으로 명함을 찾을 때 "홍길동"이라는 개인이름(personalName)을 가진 명함(VisitingCard)을 발견되는대로 순차적으로 ArrayList<VisitingCard>에 저장합니다.<br><br>
+이름을 매개변수로 하고, 내부에서는 ArrayList\<VisitingCard\>의 객체인 indexes를 생성합니다.<br><br>
+예를 들어, "홍길동"이라는 이름으로 명함을 찾을 때 "홍길동"이라는 개인이름(personalName)을 가진 명함(VisitingCard)을 발견되는대로 순차적으로 ArrayList\<VisitingCard\>에 저장합니다.<br><br>
 즉, **indexes는 VisitingCard의 참조변수(주소)값을 배열요소로 하는 ArrayList**입니다.<br><br>
-for each 반복문을 통해 VisitingCardBinder의 LinkedList<VisitingCard>객체인 visitingCards의 visitingCard를 하나씩 가져와서 매개변수로 입력 받은 personalName과 비교하여 같으면 indexes에 저장하도록 반복을 돌린 다음 반복문이 종료되면 indexes를 반환합니다.
+for each 반복문을 통해 VisitingCardBinder의 LinkedList\<VisitingCard\>객체인 visitingCards의 visitingCard를 하나씩 가져와서 매개변수로 입력 받은 personalName과 비교하여 같으면 indexes에 저장하도록 반복을 돌린 다음 반복문이 종료되면 indexes를 반환합니다.
 
 # takeOut
 명함철에서 명함을 꺼낼 때 takeOut메소드를 활용합니다.<br>
@@ -544,7 +544,7 @@ public class VisitingCardBinder implements Cloneable
 ```
 
 ## arrange 설명
-개인 성명을 기준으로 오름차순으로 설명하는데 이때 Collections 클래스의 스태틱 메소드인 sort함수를 이용합니다.<br><br>sort의 매개변수로 List와 Comparator를 입력해줘야 하는데, List는 자료형이 LinkedList<VisitingCard>인 visitingCards를 넘겨 주면 되고, 비교 기준인 Comparator의 경우 익명클래스로 Comparator를 정의하여 내부애서 compare를 오버라이딩한 익명클래스를 넘겨줍니다.<br><br>
+개인 성명을 기준으로 오름차순으로 설명하는데 이때 Collections 클래스의 스태틱 메소드인 sort함수를 이용합니다.<br><br>sort의 매개변수로 List와 Comparator를 입력해줘야 하는데, List는 자료형이 LinkedList\<VisitingCard\>인 visitingCards를 넘겨 주면 되고, 비교 기준인 Comparator의 경우 익명클래스로 Comparator를 정의하여 내부애서 compare를 오버라이딩한 익명클래스를 넘겨줍니다.<br><br>
 compare에서는 개인의 성명으로 비교할 수 있게 개인의 성명으로 접근할 수 있도록 getPersonalName메소드를 호출해줍니다.<br><br>반환되는 name은 String이기 때문에 String의 메소드인 compareTo를 통해 같은 이름인지 아닌지를 판별합니다.<br><br>
 그런 다음 정렬이 끝나면 현재 카드의 위치를 제일 처음 카드 위치로 변경합니다.<br>
 
