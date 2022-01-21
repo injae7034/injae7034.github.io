@@ -184,6 +184,8 @@ length가 0보다 크면 저장된 account항목이 있다는 뜻이고 그게 �
 즉, 가장 최근에 반영된 balance에 amount를 더해줘서 그 값을 누적시킵니다.<br><br>
 amount는 int형으로 나중에 record 메소드를 호출하면서 매개변수로 입력할 때 수입이면 +로 입력을 받도록 할 것이고, 지출이면 -로 입력되도록 설정할 것입니다.<br><br>
 이러한 가정하에서 **다형성**을 적용하여 **금액(amount)이 양수**이면 **Income 객체를 생성**하여 **Account 객체에 참조변수값을 저장**하고, **금액(amount)이 음수**이면 **Outgo 객체를 생성**하여 **Account 객체에 참조변수값을 저장**합니다.<br><br>
+이 때 주의할 점이 Income객체를 생성할 때는 매개변수로 입력받은 amount값이 양수이기 때문에 매개변수로 amount를 그대로 넣어주면 되지만, Outgo객체를 생성할 때는 매개변수로 입력 받은 amount값이 음수이기 때문에 amount에 -1을 곱하여 양수로 바꿔준 값을 매개변수로 넣어서 Outgo 객체를 생성합니다.<br><br>
+즉, record입력시에만 매개변수로 amount를 양수 또는 음수로 입력하고, Income이나 Outgo는 둘 다 amount로 양수값을 저장하여 관리합니다.<br><br> 
 그리고 ArrayList\<Account\>에 Account 객체의 참조변수값을 add시켜줍니다.<br><br>
 add가 성공적으로 되었다면 true가 반환될 것이고, 이 account객체의 참조변수값을 indexof의 매개변수로 전달하여 그 배열첨자 위치값을 구한 다음 이를 반환합니다.
 
