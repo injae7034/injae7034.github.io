@@ -238,7 +238,7 @@ target="_blank">Account 클래스에서 Object의 toString 메소드 오버라�
 
 그래서 **System.out.println(account);** 을 호출하면 **System.out.println(account.toString());**이 될 것이고, Account 클래스에서 오버라이딩된 toString이 콘솔창에 출력될 것입니다.
 
-## find 메소드 오버라이딩
+## find 메소드 오버로딩
 가계부에서 검색조건을 여러 개 설정하였습니다.<br><br>
 이 **검색 조건에 따라서 매개변수의 자료형이나 그 개수가 달라지기 때문에 find 메소드에 오버로딩을 적용**하였습니다.<br><br>
 find 메소드는 총 5개를 오버로딩하였는데, 첫번째는 일자(date)로 찾기, 두번째는 적요(briefs)로 찾기, 세번째는 일자(date)와 적요(briefs)로 찾기, 네번째는 기간(date, date)으로 찾기, 다섯번째는 기간(date, date)과 적요(briefs)로 찾기입니다.<br><br>
