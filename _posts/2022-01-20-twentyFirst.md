@@ -1,6 +1,6 @@
 ---
 layout: single
-title:  "Java프로젝트하면서 오버로딩 적용 및 다형성으로 인한 오버라이딩의 장점 공부하기"
+title:  "Java프로젝트하면서 오버로딩 그리고 다형성, 오버라이딩을 적용하여 코드 효율성 올리기"
 categories: Java
 tag: [Java, 프로젝트, 가계부, AccountBook, 오버로딩, 오버라이딩, 다형성, 추상클래스, 추상메소드, 상속]
 toc: true
@@ -17,19 +17,19 @@ target="_blank">Account, Income과 Outgo클래스 만들기</a>
 Account는 추상클래스이자 부모클래스이고, Income과 Outgo는 Account를 상속 받아 구현하는 자식클래스입니다.<br><br>
 Account는 추상메소드를 가지고 있기 떄문에 이를 상속받는 자식들은 반드시 이 추상메소드를 구현해야 합니다.<br><br>
 
-Account의 추상메소드인 setAmount와 clone을 설명하면서 이들은 추상메소드로 만들지 말고, Income과 Outgo의 메소드로 각각 정의하면 되는데 **왜 굳이 추상메소드로 설정하여 Account를 추상클래스로 만드는지에 대해서 이번 시간에 AccountBook클래스를 구현하면서 자세히 알아보도록 하겠습니다.**
+Account의 추상메소드인 setAmount와 clone을 설명하면서 이들은 추상메소드로 만들지 말고, Income과 Outgo의 메소드로 각각 정의하면 되는데 **왜 굳이 추상메소드로 설정하여 Account를 추상클래스로 만드는지에 대해서 이번 시간에 AccountBook클래스를 구현하면서 자세히 알아보도록 하겠습니다.**<br><br>
+또한 **오버로딩과 다형성, 오버라이딩을 적용하면 어떻게 코드를 효율적으로 짤 수 있는지**도 알아보도록 하겠습니다.
 
 # AccountBook 클래스
 엔티티클래스인 Account, Income, Outgo를 관리할 컨트롤(파일) 클래스가 바로 AccountBook입니다.<br><br>
 AccountBook은 가계부를 의미하는데 가계부는 보통 수입항목과 지출항목이 있을 것이고, 이들을 순차적으로 저장하고 보여주는 테이블 형식일 것입니다.<br><br>
 그렇기 때문에 AccountBook에서 자료구조는 배열이 적합합니다.<br><br>
-그래서 AccountBook은 ArrayList<E>를 사용하여 수입항목과 지출항목들을 관리하려고 합니다.<br><br>
+그래서 AccountBook은 ArrayList를 사용하여 수입항목과 지출항목들을 관리하려고 합니다.<br><br>
 근데 이 때 벌써부터 문제가 생깁니다...<br><br>
-그럼 AccountBook클래스는 수입항목과 지출항목 2개로 이루어지니까 ArrayList<Income>, ArrayList<Outgo> 이렇게 2개의 ArrayList가 필요할까요?<br><br>
-만약에 **다형성의 원리**가 적용되지 않는다면 그렇게 할 수 밖에 없습니다ㅠ
-그럼 Income은 ArrayList<Income>에서 저장 및 관리하고, Outgo는 ArrayList<Outgo>에서 저장 및 관리해야 합니다.<br><br>
+그럼 AccountBook클래스는 수입항목과 지출항목 2개로 이루어지니까 **ArrayList\<Income\>, ArrayList\<Outgo\>** 이렇게 2개의 ArrayList가 필요할까요?<br><br>
+만약에 **다형성**이 적용되지 않는다면 Income은 ArrayList\<Income\>에서 저장 및 관리하고, Outgo는 ArrayList\<Outgo\>에서 저장 및 관리해야 합니다.<br><br>
 Income과 Outgo의 각 필드멤버가 앞에서 말했듯이 다 똑같은데 굳이 이렇게 비효율적으로 2개로 나눠서 관리할 필요가 있을까요?<br><br>
-그래서 등장한 것이 부모 클래스인 Account입니다.<br><br>
+그래서 등장한 것이 부모 클래스인 Account입니다.
 # 다형성을 적용하여 Account 객체 생성하기
 Account 객체를 생성하는 방법은 2가지인데요...
 첫번째는 다음과 같습니다.
@@ -38,7 +38,7 @@ Account account = new Account();
 ```
 Account 자신의 생성자로 자신을 생성하는 이때까지 해오던 가장 쉬운 방법입니다;;<br><br>
 (물론 지금 제가 구현하고 있는 가계부 프로그램에서 Account는 추상클래스이기 때문에 자기 자신의 객체를 생성할 수 없어서 위의 방법은 사용할 수 없습니다.<br><br>
-Account가 추상클래스가 아니고 일반클래스라면 위처럼 자기자신의 생성자로 객체생성이 가능합니다.)
+Account가 추상클래스가 아니고 일반클래스라면 위처럼 자기자신의 생성자로 객체생성이 가능합니다.)<br><br>
 두번째 방법은 드디어 **다형성**을 적용한 방법입니다.
 ```java
 Account account = new Income();
@@ -46,11 +46,11 @@ Account account = new Income();
 부모클래스인 Account를 자식클래스인 Income의 생성자로 생성할 수 있다는 말이죠.<br><br>
 이는 부모클래스(Account)가 추상클래스라서 본인(Account)의 생성자로 본인의 객체를 생성할 수 없어도, 자식(Income)의 생성자를 이용하면 본인(Account)의 객체를 생성할 수 있습니다.<br><br>
 즉, 부모클래스인 Account가 일반클래스이든 추상클래스이든 상관없이 자식클래스의 Income 생성자를 이용하여 부모클래스인 Account의 객체를 생성할 수 있습니다.<br><br>
-이는 또다른 자식인(Account를 상속받는) Outgo에도 마찬가지로 적용됩니다.<br><br>
+이는 또다른 자식인(Account를 상속받는) Outgo에도 마찬가지로 적용됩니다.
 ```java
 Account account = new Outgo();
 ```
-위와 같이 Outgo의 생성자로도 Account를 생성할 수 있습니다.
+위와 같이 Outgo의 생성자로도 Account를 생성할 수 있습니다.<br><br>
 이뿐만 아니라 다음과 같은 표현도 가능합니다.
 ```java
 Income income = new Income();
@@ -60,7 +60,7 @@ account = outgo;
 ```
 즉, 부모인 Account 객체의 참조변수값에 이미 생성된 자식클래스의 참조변수값을 저장할 수 있습니다. 
 
-# 다형성을 적용하여 ArrayList<Account> 하나만 사용하기
+# 다형성을 적용하여 ArrayList\<Account\> 하나만 사용하기
 위에서 말했듯이 다형성을 적용하면 Account객체를 Income이나 Outgo의 생성자로 생성할 수 있습니다.<br><br>
 그럼 Income으로 생성한 Account객체와 Outgo로 생성한 Account객체는 완전히 같을까요?<br><br>
 결과부터 말씀드리면 Income으로 생성한 Account객체와 Outgo로 생성한 Account객체는 서로 다릅니다.<br><br>
@@ -70,7 +70,9 @@ Income으로 생성한 Account객체는 Income의 특성을 가지고 있기 때
 그럼 이제 Income 생성자로 생성한 Account 객체에서 setAmount를 호출하면 Income에서 오버라이딩한 setAmount가 호출됩니다.<br><br>
 Outgo 생성자로 생성한 Account 객체에서 setAmount를 호출하면 Outgo에서 오버라이딩한 setAmount가 호출됩니다.<br><br>
 즉, 자식클래스의 생성자로 Account 객체를 생성하면 Income이나 Outgo 클래스를 따로 관리할 필요없이 Account 하나로 통일하여 관리하면서도 Income이나 Outgo 클래스의 특성을 살릴 수 있다는 말입니다.<br><br>
-원래는 ArrayList<Income>에는 Income클래스만 저장하고, ArrayList<Outgo>에는 Outgo클래스만 저장하였지만 **다형성을 적용**하여 **ArrayList<Account>**에 Income클래스나 Outgo클래스 둘다 **구분없이 저장**할 수 있게 되었습니다.
+원래는 ArrayList\<Income\>에는 Income클래스만 저장하고, ArrayList\<Outgo\>에는 Outgo클래스만 저장하였지만
+
+**다형성을 적용**하여 **ArrayList\<Account\>**에 Income클래스나 Outgo클래스 둘다 **구분없이 저장**할 수 있게 되었습니다.
 
 # 다형성 적용시 주의할 점
 여기서 주의할 점은 **자식클래스로 생성한 Account객체** 또는 **자식클래스의 참조변수값을 저장한 Account객체**는 **Account 자신이 가진 메소드만 호출할 수 있다**는 것입니다.<br><br>
@@ -81,7 +83,7 @@ Outgo 생성자로 생성한 Account 객체에서 setAmount를 호출하면 Outg
 내용이 없는 setAmount와 clone을 부모클래스인 Account에서 추상클래스로 선언이 되어 있으면 Income생성자로 생성된 Account나 Income의 참조변수값을 저장한 Account에서 Income에서 오버라이딩된 내용의 setAmount와 clone을 호출할 수 있습니다.
 
 ## AccountBook 클래스 필드멤버
-위의 다형성을 적용하면 AccountBook클래스는 ArrayList<Account> accounts와 그 사용량(저장된 Account객체 개수)을 나타내는 length 이렇게 2개가 있습니다.
+위의 다형성을 적용하면 AccountBook클래스는 ArrayList\<Account\> accounts와 그 사용량(저장된 Account객체 개수)을 나타내는 length 이렇게 2개가 있습니다.
 ```java
 public class AccountBook
 {
@@ -104,26 +106,26 @@ public class AccountBook
     }
 }
 ```
-ArrayList<Account>를 생성하여 그 주소를 저장하고, 당연히 저장된 것이 없기 떄문에 길이(사용량)는 0으로 초기화해줍니다.
+ArrayList\<Account\>를 생성하여 그 주소를 저장하고, 당연히 저장된 것이 없기 떄문에 길이(사용량)는 0으로 초기화해줍니다.
 
 # 도메인 용어 정리
-**추상클래스와 추상메소드, 다형성, 오버라이딩**에 대해 설명하다 보니 도메인 용어 정리를 못했네요...;;
-일단 AccountBook에서는 항목을 추가할 때는 앞에서 주소록 프로그램과 똑같이 가계부에 기재한다는 용어를 사용하여 '기재하기(record)'를 사용합니다.<br><br>
-기재한 항목을 배열 인덱스로 구하는 getAt도 정의하였습니다.<br><br>
-항목을 찾을 때는 '찾기(find)', 항목을 수정할 때는 '수정하기(correct)'를 사용합니다.<br><br>
-수정하기(correct)에서 수정할 수 있는 내용은 금액(amount)과 비고(remarks)로 정하였습니다.<br><br>
+**추상클래스와 추상메소드, 다형성, 오버라이딩**에 대해 설명하다 보니 도메인 용어 정리를 못했네요...;;<br><br>
+일단 AccountBook에서는 항목을 추가할 때는 앞에서 주소록 프로그램과 똑같이 가계부에 기재한다는 용어를 사용하여 **기재하기(record)**를 사용합니다.<br><br>
+기재한 항목을 배열 인덱스로 구하는 **getAt**도 정의하였습니다.<br><br>
+항목을 찾을 때는 **찾기(find)**, 항목을 수정할 때는 **수정하기(correct)**를 사용합니다.<br><br>
+수정하기(correct)에서 **수정할 수 있는 내용은 금액(amount)과 비고(remarks)**로 정하였습니다.<br><br>
 나머지 멤버인 일자(date), 적요(briefs)는 수정하지 못하도록 했습니다.<br><br>
 그 이유는 개인에 따라 다르지만 일자와 적요까지 다 수정을 할 수 있다면 장부조작을 쉽게 할 수 있다고 생각하여 금액과 비고만 수정할 수 있도록 하였습니다.<br><br>
-잔액(balance)은 금액(amount)에 종속적인 관계이기 때문에 금액이 바뀌면 자동으로 잔액(balance)도 바뀝니다.<br><br>
+**잔액(balance)은 금액(amount)에 종속적인 관계**이기 때문에 금액이 바뀌면 자동으로 잔액(balance)도 바뀝니다.<br><br>
 지우는 기능은 없습니다.<br><br>
 가계부에서 이미 기재한 내용을 나중에 지운다는 것은 개인적으로 장부조작과 같은 개념이라고 생각해서 지우는 기능은 과감히 없앴습니다.<br><br>
 정렬하기 기능도 없는데 가계부는 일자대로 순차적으로 보여주는 것이 맞기 때문에 이미 정렬이 된 상태이기 때문에 따로 다른 기준으로 정렬할 필요가 없다고 생각했습니다.<br><br>
-주소록과 비교해서 추가된 도메인 용어는 '계산하기(calculate)'입니다.<br><br>
+주소록과 비교해서 추가된 도메인 용어는 **계산하기(calculate)**입니다.<br><br>
 주소록은 저장된 데이터로 어떠한 연산을 할 필요가 없이 데이터를 잘 저장하고, 검색하고, 편하게 볼 수 있으면 됩니다.<br><br>
 하지만 가계부는 주소록과 달리 여기서 하나의 기능이 추가되야 합니다.<br><br>
 즉, 사용자가 가계부를 사용하는 결정적인 이유는 저장된 데이터로 연산처리를 해서 유의미한 결과를 알 수 있기 때문이죠.<br><br>
-그래서 이 연산처리를 해주는 메소드가 바로 '계산하기(calculate)'입니다.<br><br>
-계산하기를 통해 총수입, 총지출, 총잔액을 알 수 있도록 구현할 것입니다.
+그래서 이 연산처리를 해주는 메소드가 바로 계산하기(calculate)입니다.<br><br>
+계산하기를 통해 **일정 기간동안의 총수입, 총지출, 총잔액**을 알 수 있도록 구현할 것입니다.
 
 ## record 메소드
 ```java
@@ -182,7 +184,7 @@ length가 0보다 크면 저장된 account항목이 있다는 뜻이고 그게 �
 즉, 가장 최근에 반영된 balance에 amount를 더해줘서 그 값을 누적시킵니다.<br><br>
 amount는 int형으로 나중에 record 메소드를 호출하면서 매개변수로 입력할 때 수입이면 +로 입력을 받도록 할 것이고, 지출이면 -로 입력되도록 설정할 것입니다.<br><br>
 이러한 가정하에서 **다형성**을 적용하여 **금액(amount)이 양수**이면 **Income 객체를 생성**하여 **Account 객체에 참조변수값을 저장**하고, **금액(amount)이 음수**이면 **Outgo 객체를 생성**하여 **Account 객체에 참조변수값을 저장**합니다.<br><br>
-그리고 ArrayList<Account>에 Account 객체의 참조변수값을 add시켜줍니다.<br><br>
+그리고 ArrayList\<Account\>에 Account 객체의 참조변수값을 add시켜줍니다.<br><br>
 add가 성공적으로 되었다면 true가 반환될 것이고, 이 account객체의 참조변수값을 indexof의 매개변수로 전달하여 그 배열첨자 위치값을 구한 다음 이를 반환합니다.
 
 ## getAt 메소드
@@ -193,7 +195,48 @@ public class AccountBook
     public Account getAt(int index) {return this.accounts.get(index);}
 }
 ```
-getAt은 접근하고자 하는 배열첨자 위치(index)를 매개변수로 입력 받아서 내부에서 index를 매개변수로 전달하면서  ArrayList<Account>의 get메소드를 호출하면서 반환합니다.
+getAt은 접근하고자 하는 배열첨자 위치(index)를 매개변수로 입력 받아서 내부에서 index를 매개변수로 전달하면서  ArrayList\<Account\>의 get메소드를 호출하면서 반환합니다.
+
+## getLength 메소드
+```java
+public class AccountBook
+{
+    //getLength
+    public int getLength() {return this.length;}
+}
+```
+AccountBook의 필드멤버인 lenth(가계부에서 account항목의 개수)가 private이기 때문에 외부에서 그 값을 알아내기 위해 접근을 할 수 없습니다.<br><br>
+그래서 외부에서 그 값을 알아내기 위해 getter메소드를 구현해줍니다.<br><br>
+setter는 따로 해줄 필요가 없는데 그 이유는 record메소드에서 account 객체를 추가할 때 length를 증가시켜주도록 처리하고 있기 때문입니다.<br><br>
+record메소드 내부에서는 AccountBook 클래스 내부 접근이기 때문에 setter메소드 필요없이 바로 접근하여 값을 변경해줄 수 있습니다.<br><br>
+또한 length 값을 변경시키는 유일한 행위는 record 밖에 없기 때문에 다른 상황은 신경쓸 필요가 없습니다.<br><br>
+(지우기 기능이 없고, 기재하기 기능만 구현했기 때문에...)
+
+## printAllAccounts 메소드
+```java
+public class AccountBook
+{
+    //printAllAccounts
+    public int printAllAccounts()
+    {
+        for(Account account : this.accounts)
+        {
+            System.out.println(account);
+        }
+        return this.length;
+    }
+
+}
+```
+나중에 콘솔창에서 테스트를 할 때 가계부(AccountBook)에 있는 모든 Account 항목들을 출력해야 하는 일이 있을텐데 그 때마다 코드 중복이 심할 거 같아서 미리 가계부의 전체 Account 항목을 출력하는 메소드를 구현합니다.<br><br>
+for each 반복문을 돌려서 내부에서 println메소드에 account객체를 출력하도록 했습니다.<br><br>
+println에서 객체의 참조변수값만 매개변수로 전달할 경우 자동으로 뒤에 .toString이 붙게 되는데 저번 시간에 Account 클래스를 구현하면서 Object의 toString 메소드를 Account 클래스의 특성에 맞게 오버라이딩하였습니다.<br>
+<a href="https://injae7034.github.io/java/twentieth/#tostring-%EB%A9%94%EC%86%8C%EB%93%9C-%EC%98%A4%EB%B2%84%EB%9D%BC%EC%9D%B4%EB%94%A9"
+target="_blank">Account 클래스에서 Object의 toString 메소드 오버라이딩</a>
+
+<br><br>
+
+그래서 **System.out.println(account);** 을 호출하면 **System.out.println(account.toString());**이 될 것이고, Account 클래스에서 오버라이딩된 toString이 콘솔창에 출력될 것입니다.
 
 ## find 메소드 오버라이딩
 가계부에서 검색조건을 여러 개 설정하였습니다.<br><br>
@@ -225,17 +268,17 @@ public class AccountBook
 }
 ```
 매개변수로 Date클래스의 객체(일자)를 입력받습니다.<br><br>
-메소드 내부에서 같은 Date(일자)를 가진 Account 객체의 배열첨자의 위치들을 저장할 ArrayList<Integer>를 생성합니다.<br><br>
+메소드 내부에서 같은 Date(일자)를 가진 Account 객체의 배열첨자의 위치들을 저장할 ArrayList\<Integer\>를 생성합니다.<br><br>
 그리고 가계부(AccountBook)의 저장된 account 항목의 처음부터 끝까지 반복을 합니다.<br><br>
 for 반목문 내에서 매개변수로 입력받은 일자(date)와 account 항목의 일자(date)가 서로 같은지 비교합니다.<br><br>
-그러기 위해서 우선 ArrayList<Account>의 get메소드를 통해 account 객체를 구한 다음 getDate를 통해 Account클래의 필드멤버인 date값을 구합니다.<br><br>
+그러기 위해서 우선 ArrayList\<Account\>의 get메소드를 통해 account 객체를 구한 다음 getDate를 통해 Account클래의 필드멤버인 date값을 구합니다.<br><br>
 date끼리 같은지 비교를 하기 위해서 예전에 Date클래스를 구현할 때 Object의 equals를 오버라이딩하였기 때문에 이 equals를 호출하여 동등비교를 합니다.<br>
 <a href="https://injae7034.github.io/java/nineteenth/#equals-%EB%A9%94%EC%86%8C%EB%93%9C-%EC%98%A4%EB%B2%84%EB%9D%BC%EC%9D%B4%EB%94%A9"
 target="_blank">Java의 LocalDate를 활용해서 나만의 Date클래스 만들기 - equals 메소드 오버라이딩</a>
 
 <br><br>
-equals의 결과 true이면 같은 일자(date)를 가지고 있기 때문에 배열첨자위치를 저장하는 ArrayList<Integer>의 indexes에 그 위치를 add시킵니다.<br><br>
-이렇게 for반복을 돌리면서 같은 일자(date)를 찾아 그 배열첨자 위치를 저장한 다음에 ArrayList<Integer> indexes를 반환합니다.
+equals의 결과 true이면 같은 일자(date)를 가지고 있기 때문에 배열첨자위치를 저장하는 ArrayList\<Integer\>의 indexes에 그 위치를 add시킵니다.<br><br>
+이렇게 for반복을 돌리면서 같은 일자(date)를 찾아 그 배열첨자 위치를 저장한 다음에 ArrayList\<Integer\> indexes를 반환합니다.
 
 ### find(briefs)
 ```java
@@ -262,14 +305,14 @@ public class AccountBook
 }
 ```
 매개변수로 String 클래스인 적요(briefs)를 입력받습니다.<br><br>
-메소드 내부에서 같은 briefs(적요)를 가진 Account 객체의 배열첨자의 위치들을 저장할 ArrayList<Integer>를 생성합니다.<br><br>
+메소드 내부에서 같은 briefs(적요)를 가진 Account 객체의 배열첨자의 위치들을 저장할 ArrayList\<Integer\>를 생성합니다.<br><br>
 그리고 가계부(AccountBook)의 저장된 account 항목의 처음부터 끝까지 반복을 합니다.<br><br>
 for 반목문 내에서 매개변수로 입력받은 briefs(적요)와 account 항목의 briefs(적요)가 서로 같은지 비교합니다.<br><br>
-그러기 위해서 우선 ArrayList<Account>의 get메소드를 통해 account 객체를 구한 다음 getBriefs를 통해 Account클래의 필드멤버인 briefs값을 구합니다.<br><br>
+그러기 위해서 우선 ArrayList\<Account\>의 get메소드를 통해 account 객체를 구한 다음 getBriefs를 통해 Account클래의 필드멤버인 briefs값을 구합니다.<br><br>
 breifs는 String 클래스이기 때문에 String 클래스에서 대소동등비교를 하기 위해 이미 구현해놓은 compareTo 메소드를 활용합니다.<br><br>
 compareTo는 매개변수로 입력 받은 String보다 compareTo 메소드를 호출한 String이 더 크면 1이 반환되고, 같으면 0이 반환되고, 작으면 -1이 반환됩니다.<br><br>
-저희는 동등비교를 해야하기 때문에 같은지, 즉 그 값이 0인지를 선택구조로 물어보고, 값이 0이면(briefs가 서로 같으면) 배열첨자위치를 저장하는 ArrayList<Integer>의 indexes에 그 위치를 add시킵니다.<br><br>
-이렇게 for반복을 돌리면서 같은 적요(briefs)를 찾아 그 배열첨자 위치를 저장한 다음에 ArrayList<Integer> indexes를 반환합니다.
+저희는 동등비교를 해야하기 때문에 같은지, 즉 그 값이 0인지를 선택구조로 물어보고, 값이 0이면(briefs가 서로 같으면) 배열첨자위치를 저장하는 ArrayList\<Integer\>의 indexes에 그 위치를 add시킵니다.<br><br>
+이렇게 for반복을 돌리면서 같은 적요(briefs)를 찾아 그 배열첨자 위치를 저장한 다음에 ArrayList\<Integer\> indexes를 반환합니다.
 
 ### find(date, briefs)
 ```java
@@ -300,15 +343,15 @@ public class AccountBook
 }
 ```
 매개변수로 일자(date)와 적요(briefs)를 받습니다.<br><br>
-우선 앞에서 구현한 find(date) 메소드를 호출하여 가계부(AccountBook)에서 같은 일자(date)를 가진 Account 객체들의 배열첨자 위치를 저장한 ArrayList<Integer> sameDates를 반환받습니다.<br><br>
-이 sameDates는 ArrayList<Account>에서 매개변수로 입력 받은 date와 같은 date를 가진 Account 객체들의 배열첨자 위치 값을 배열 요소로 하고 있습니다.<br><br>
-그리고 이제 같은 date를 가진 Account 객체들 중에서 같은 briefs를 가진 Account 객체들의 배열첨자 위치를 저장할 ArrayList<Integer> indexes를 생성합니다.<br><br>
+우선 앞에서 구현한 find(date) 메소드를 호출하여 가계부(AccountBook)에서 같은 일자(date)를 가진 Account 객체들의 배열첨자 위치를 저장한 ArrayList\<Integer\> sameDates를 반환받습니다.<br><br>
+이 sameDates는 ArrayList\<Account\>에서 매개변수로 입력 받은 date와 같은 date를 가진 Account 객체들의 배열첨자 위치 값을 배열 요소로 하고 있습니다.<br><br>
+그리고 이제 같은 date를 가진 Account 객체들 중에서 같은 briefs를 가진 Account 객체들의 배열첨자 위치를 저장할 ArrayList\<Integer\> indexes를 생성합니다.<br><br>
 이제 for 반복문을 돌리는데 이 때 주의할 점은 AccountBook의 length만큼(가계부에서 account의 개수만큼) 반복을 돌리는 것이 아니라는 점입니다.<br><br>
 저희는 이미 find(date)를 통해서 AccountBook에서 같은 date를 가진 Account 객체들의 배열첨자 위치와 그 개수를 알고 있습니다.<br><br>
 즉, 저희가 찾고자 하는 것은 같은 일자를 가진 account 항목들 중에서 적요(briefs)도 같은 account 항목들을 찾는 것입니다.<br><br>
-그래서 여기서는 반복문의 조건으로 가계부(AccountBook)에서 같은 일자(date)를 가진 Account 객체들의 배열첨자 위치를 저장한 ArrayList<Integer> sameDates의 size만큼 반복을 돌립니다.<br><br>
+그래서 여기서는 반복문의 조건으로 가계부(AccountBook)에서 같은 일자(date)를 가진 Account 객체들의 배열첨자 위치를 저장한 ArrayList\<Integer\> sameDates의 size만큼 반복을 돌립니다.<br><br>
 for 반복문 내부에서는 같은 briefs를 가진 account항목을 찾기 위해 compareTo를 이용합니다.<br><br>
-그래서 같은 briefs를 가졌으면 그 배열첨자 위치를 ArrayList<Integer> indexes에 저장하고, 반복이 끝나면 indexes를 반환합니다.<br><br>
+그래서 같은 briefs를 가졌으면 그 배열첨자 위치를 ArrayList\<Integer\> indexes에 저장하고, 반복이 끝나면 indexes를 반환합니다.<br><br>
 이 indexes에는 같은 date와 같은 briefs를 가진 account 객체들의 배열첨자 위치 값이 저장되어 있을 겁니다.
 
 ### find(date, date)
@@ -345,8 +388,8 @@ public class AccountBook
 매개변수로 일자(date)와 일자(date)를 입력받습니다.<br><br>
 즉 일자부터 일자까지 기간을 검색합니다.<br><br>
 예를 들어 new Date("20220101"), new Date("20220120")을 매개변수로 입력 받으면 2022년 1월 1일부터 2022년 1월 20일까지의 date를 가진 account 항목들의 위치를 검색해주는 기능을 수행합니다.<br><br>
-메소드 내부에서 먼저 기간동안의 account 객체들의 배열첨자 위치를 저장할 ArrayList<Integer> indexes를 생성합니다.<br><br>
-그리고 같은 일자(date)들의 위치를 저장할 임시공간인 ArrayList<Integer> sameDates를 null로 초기화합니다.<br><br>
+메소드 내부에서 먼저 기간동안의 account 객체들의 배열첨자 위치를 저장할 ArrayList\<Integer\> indexes를 생성합니다.<br><br>
+그리고 같은 일자(date)들의 위치를 저장할 임시공간인 ArrayList\<Integer\> sameDates를 null로 초기화합니다.<br><br>
 이 후 while 반복문을 돌리는데 이 때 조건이 fromDate가 toDate보다 작거나 같은동안 반복합니다.<br><br>
 이를 위해서 Date클래스에서 미리 구현해놓은 isGreaterThan메소드를 호출합니다.<br>
 <a href="https://injae7034.github.io/java/nineteenth/#isgreaterthan-%EB%A9%94%EC%86%8C%EB%93%9C"
@@ -357,7 +400,7 @@ target="_blank">Java의 LocalDate를 활용해서 나만의 Date클래스 만들
 그리고 while반복문 내에서 find(fromDate)메소드를 호출하여 fromDate와 같은 일자를 가진 Account 객체들의 배열첨자 위치를 저장한 sameDates를 반환받습니다.<br><br>
 이 sameDates의 처음배열요소부터 마지막배열요소까지, 즉, size만큼 for반복을 돌리면서 배열첨자 위치(sameDates.get(i))를 indexes에 저장합니다.<br><br>
 여기서 i가 아니라 sameDates.get(i)를 add시켜주는 이유는 i는 sameDates의 배열첨자위치이기 때문에 sameDates가 할당해제되면 아무 의미가 없는 것입니다.<br><br>
-sameDates의 배열첨자가 중요한 것이 아니라 sameDates에 저장된 배열요소인 AccountBook의 ArrayList<Account>에서 같은 일자를 가진 account 객체들의 배열첨자 위치를 저장하는 것이 목적이기 때문에 sameDates.get(i)를 통해 sameDates의 배열요소(값)를 indexes에 add시켜줍니다.<br>
+sameDates의 배열첨자가 중요한 것이 아니라 sameDates에 저장된 배열요소인 AccountBook의 ArrayList\<Account\>에서 같은 일자를 가진 account 객체들의 배열첨자 위치를 저장하는 것이 목적이기 때문에 sameDates.get(i)를 통해 sameDates의 배열요소(값)를 indexes에 add시켜줍니다.<br>
 for 반복문이 끝나면 해당 일자와 같은 account 객체들의 위치가 모두 indexes에 저장되었기 때문에 다음 날짜로 이동을 하여야 합니다.<br><br>
 다음 날짜로 이동(해당 일자 + 1일)하기 위해서 Date클래스의 정적메소드인 nextDate(Date date, int days)를 호출합니다.<br>
 <a href="https://injae7034.github.io/java/nineteenth/#%EB%A7%A4%EA%B0%9C%EB%B3%80%EC%88%98-2%EA%B0%9Cint-%EC%9E%90%EB%A3%8C%ED%98%95-%EB%B3%80%EC%88%98-date%EA%B0%9D%EC%B2%B4-%EC%B0%B8%EC%A1%B0%EB%B3%80%EC%88%98%EA%B0%92%EB%A5%BC-%EA%B0%80%EC%A7%80%EB%8A%94-nextdate"
@@ -466,7 +509,7 @@ public class AccountBook
 ```
 
 ### correct 메소드 설명
-ArrayList<Account>에서 수정할 Account 객체의 배열첨자 위치인 index를 매개변수로 입력 받고, 수정할 금액(amount)와 수정할 비고(remarks)를 매개변수로 입력받습니다.<br><br>
+ArrayList\<Account\>에서 수정할 Account 객체의 배열첨자 위치인 index를 매개변수로 입력 받고, 수정할 금액(amount)와 수정할 비고(remarks)를 매개변수로 입력받습니다.<br><br>
 수정할 금액인 amount는 record와는 달리 무조건 양수로 입력받도록 설정합니다.<br><br>
 메소드 내부에서 먼저 수정할 Account의 객체를 get메소드를 통해 구합니다.<br><br>
 구한 account는 수입일수도 있고, 지출일수도 있습니다.<br><br>
@@ -817,57 +860,11 @@ public class AccountBook
 ```
 이렇게 3가지 방식으로 오버로딩하면 적재적소에 필요한 correct를 이용하면 되기 때문에 애초에 비효율적인 처리가 발생하지 않습니다.<br><br>
 그래서 저는 첫 번째 방법보다는 두 번째 방법을 추천합니다.<br><br>
-메소드가 여러 가지 기능을 동시에 하려다 보면 비대해지게 되는데 그것보다는 세분화하여 한 번에 한가지 기능을 하는 것이 코드 이해도 쉽고, 유지 및 보수 차원에서도 더 좋기 때문입니다.
+메소드가 여러 가지 기능을 동시에 하려다 보면 비대해지게 되는데 그것보다는 세분화하여 한 번에 한가지 기능을 하는 것이 코드 이해도 쉽고, 유지 및 보수 차원에서도 더 좋기 때문입니다.<br><br>
 
-## calculate 메소드
-```java
-public class AccountBook
-{
-    //Calculate
-    public Map<String, Integer> calculate(Date fromDate, Date toDate)
-    {
-        //반환할 해쉬맵을 생성한다.
-        Map<String, Integer> totalOutcomes = new LinkedHashMap<>();
-        //같은 date들의 위치를 저장할 임시공간인 ArrayList 생성하기
-        ArrayList<Integer> sameDates = null;
-        int totalIncome = 0;//총수입을 저장할 공간
-        int totalOutgo = 0;//총지출을 저장할 공간
-        Account account = null;//Account객체를 담을 임시공간
-        //fromDate가 toDate보다 작거나 같은동안 반복한다.
-        while(fromDate.isGreaterThan(toDate) == false)
-        {
-            //가계부(AccountBook)에서 fromDate와 같은 date를 가진
-            //Account객체들의 위치를 찾아서 그 위치를 저장한 배열을 반환한다.
-            sameDates = this.find(fromDate);
-            //같은 dates의 위치를 저장한 배열의 처음부터 마지막까지 반복한다.
-            for(int i = 0; i < sameDates.size(); i++)
-            {
-                //account를 구한다.
-                account = this.getAt(sameDates.get(i));
-                //account가 수입(Income)이면
-                if(account instanceof Income)
-                {
-                    totalIncome += account.getAmount();
-                }
-                //account가 지출(Outgo)이면
-                else
-                {
-                    totalOutgo += account.getAmount();
-                }
-            }
-            //fromDate를 1일 증가시켜준다.
-            fromDate = Date.nextDate(fromDate, 1);
-        }
-        //총잔액(totalBalance)을 구한다.
-        int totalBalance = totalIncome - totalOutgo;
-        //해쉬맵에 결과를 저장한다.
-        totalOutcomes.put("totalIncome", totalIncome);
-        totalOutcomes.put("totalOutgo", totalOutgo);
-        totalOutcomes.put("totalBalance", totalBalance);
-        //해쉬맵을 반환한다.
-        return totalOutcomes;
-    }
-}
-```
-
-### calculate 메소드 설명
+# calculate 메소드
+calculate메소드를 구현하기 위해서 또 다른 개념을 적용하였는데 이번 글에서 다 설명하다보면 글이 길어지고, 이번 글의 핵심 개념인 오버로딩, 다형성, 오버라이딩과도 벗어나는 개념이라서 다음 글에서 이에 대해 좀 더 자세하게 설명하려고 합니다.
+# 마치며
+이번 시간에는 AccountBook의 메소드를 구현하면서 **오버로딩, 다형성, 오버라이딩을 적용하면 어떻게 코드를 더 효율적으로 짤 수 있는지**를 배우게 되었습니다.<br><br>
+다음 시간에는 AccountBook에서 아직 구현하지 않은 마지막 메소드인 calculate을 구현하면서 **HashMap**에 대해 배워보려고 합니다.<br><br>
+궁굼하시거나 잘못된 점에 대한 지적은 언제나 환영입니다^^
