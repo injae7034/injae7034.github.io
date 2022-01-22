@@ -340,4 +340,4 @@ public class Main
 ![calculate결과](../../images/2022-01-21-twentySecond/calculate결과.JPG)
 <br><br>
 
-즉, 이 **Map을 활용**하여 Key값을 활용하면 C++에서 포인터를 이용하여 반환값이 3개인 calculate를 구현한 것처럼 **Java에서도 비록 반환값은 Map 1개이지만 마치 3개의 출력값을 얻는 효과(?)**를 누릴 수 있습니다.
+즉, 이 **Map의 Key값을 활용**하면 C++에서 포인터를 이용하여 반환값이 3개인 calculate를 구현한 것처럼 **Java에서도 비록 반환값은 Map 1개이지만 마치 3개의 출력값을 얻는 효과(?)**를 누릴 수 있습니다.
