@@ -156,7 +156,7 @@ correct에서 했던 것처럼 **calculate도 오버로딩**시켜서 **총수�
 그럴바에 차라리 총수입을 구할 때 어차피 Income인지 Outgo인지 확인하여 Income이면 총수입에 누적을 시켜주고, Outgo이면 총지출에 누적시킨 다음, 마지막에 메소드 종료 전에 총수입과 총지출을 바탕으로 총잔액을 구해주면 시간적인 면에서 훨씬 효율적입니다.
 
 ## 두번째 방법 - Map\<K, V\>을 반환값으로 사용
-다시 원점(alculate 메소드 하나를 이용하는 방법)으로 돌아와 생각해봤습니다.<br><br>
+다시 원점(calculate 메소드 하나를 이용하는 방법)으로 돌아와 생각해봤습니다.<br><br>
 그 때 떠오른 생각이 바로 해쉬맵(HashMap)을 이용하는 방법이었습니다.<br><br>
 먼저 HashMap\<K, V\>에서 Key값을 String(문자열)으로 하고 Value값을 Integer(int자료형의 wrapping클래스)로 설정합니다.<br><br>
 "totalIncome"이라는 문자열을 key값으로 설정하고, int totalIncome 변수를 value값으로 설정합니다.<br><br>
@@ -244,6 +244,100 @@ target="_blank">Date 클래스 - nextDate(Date date, int days) 메소드</a>
 LinkedHashMap이기 때문에 입력순서와 동일하게 저장됩니다.<br><br>
 이제 이 **Map을 반환**하면서 **calculate메소드가 종료**되는데, 나중에 **Main에서 이 Map에 저장된 정보를 활용**하면 **총수입(totalIncome)과 총지출(totalOutgo), 총잔액(totalBalance)의 값을 알아낼 수 있습니다.**
 <br><br>
-즉, 이 **Map을 활용**하면 C++에서 포인터를 이용하여 반환값이 3개인 calculate를 구현한 것처럼
+Map의 메소드인 get에 매개변수로 Key값을 전달하면 원하는 Value값을 얻을 수 있습니다.<br><br>
+예를 들어, Main에서 가계부를 생성한 다음에 13개의 account항목을 record한 다음에 calculate 메소드를 호출해보도록 하겠습니다.<br><br>
+calculate로 반환 받은 Map의 객체에 각각 Key값을 get메소드에 전달하여 원하는 Value값을 얻을 수 있습니다.<br><br>
+코드는 아래와 같습니다.
 
- **Java에서도 비록 반환값은 Map 1개이지만 마치 3개의 출력값을 얻는 효과(?)**를 누릴 수 있습니다.
+```java
+import java.util.Map;
+
+public class Main
+{
+    public static void main(String[] args)
+    {
+		//가계부를 만든다.
+        AccountBook accountBook = new AccountBook();
+        //1. 수입을 기재한다.
+        int index = accountBook.record(new Date("20211125"), "월급",
+                2370000, "회사");
+        System.out.print("1. 수입 기재 -> ");
+        System.out.println(accountBook.getAt(index));
+        //2. 지출을 기재한다.
+        index = accountBook.record(new Date(2021, 11, 25), "식사",
+                -9000, "혼자");
+        System.out.print("2. 지출 기재 -> ");
+        System.out.println(accountBook.getAt(index));
+        //3. 지출을 기재한다.
+        index = accountBook.record(new Date("20211125"), "식사",
+                -12000, "친구");
+        System.out.print("3. 지출 기재 -> ");
+        System.out.println(accountBook.getAt(index));
+        //4. 지하철을 기재한다.
+        index = accountBook.record(new Date("20211125"), "교통비",
+                -55000, "지하철");
+        System.out.print("4. 지출 기재 -> ");
+        System.out.println(accountBook.getAt(index));
+        //5. 지출을 기재한다.
+        index = accountBook.record(new Date("20211126"), "회식",
+                -30000, "친구");
+        System.out.print("5. 지출 기재 -> ");
+        System.out.println(accountBook.getAt(index));
+        //6. 수입을 기재한다.
+        index = accountBook.record(new Date("20211126"), "캐쉬백",
+                7500, "체크카드");
+        System.out.print("6. 수입 기재 -> ");
+        System.out.println(accountBook.getAt(index));
+        //7. 지출을 기재한다.
+        index = accountBook.record(new Date("20211127"), "통신비",
+                -58000, "핸드폰");
+        System.out.print("7. 지출 기재 -> ");
+        System.out.println(accountBook.getAt(index));
+        //8. 지출을 기재한다.
+        index = accountBook.record(new Date("20211128"), "쇼핑",
+                -49000, "신발");
+        System.out.print("8. 지출 기재 -> ");
+        System.out.println(accountBook.getAt(index));
+        //9. 수입을 기재한다.
+        index = accountBook.record(new Date("20211129"), "중고판매",
+                23000, "신발");
+        System.out.print("9. 수입 기재 -> ");
+        System.out.println(accountBook.getAt(index));
+        //10. 지출을 기재한다.
+        index = accountBook.record(new Date("20211129"), "식사",
+                -11000, "혼자");
+        System.out.print("10. 지출 기재 -> ");
+        System.out.println(accountBook.getAt(index));
+        //11. 지출을 기재한다.
+        index = accountBook.record(new Date("20211130"), "식사",
+                -13500, "동생");
+        System.out.print("11. 지출 기재 -> ");
+        System.out.println(accountBook.getAt(index));
+        //12. 지출을 기재한다.
+        index = accountBook.record(new Date("20211130"), "식사",
+                -6000, "혼자");
+        System.out.print("12. 지출 기재 -> ");
+        System.out.println(accountBook.getAt(index));
+        //13. 수입을 기재한다.
+        index = accountBook.record(new Date("20211130"), "중고판매", 33000, "후라이팬");
+        System.out.print("13. 수입 기재 -> ");
+        System.out.println(accountBook.getAt(index));
+        //14. 전체기간동안 가계부를 계산한다.
+        System.out.print("14. 전체기간동안 가계부 계산하기 : ");
+        Map<String, Integer> totalOutcomes = accountBook.calculate(new Date("20211125"),
+                new Date(2021, 11, 30));
+        System.out.println(totalOutcomes);
+        //15. 총수입을 구해서 출력한다.
+        System.out.println("15. 총수입 : " + totalOutcomes.get("totalIncome"));
+        //16. 총지출을 구해서 출력한다.
+        System.out.println("16. 총지출 : " + totalOutcomes.get("totalOutgo"));
+        //17. 총잔액을 구해서 출력한다.
+        System.out.println("17. 총잔액 : " + totalOutcomes.get("totalBalance"));
+	}
+}
+```
+<br>
+![calculate결과](../../images/2022-01-21-twentySecond/calculate결과.JPG)
+<br><br>
+
+즉, 이 **Map을 활용**하여 Key값을 활용하면 C++에서 포인터를 이용하여 반환값이 3개인 calculate를 구현한 것처럼 **Java에서도 비록 반환값은 Map 1개이지만 마치 3개의 출력값을 얻는 효과(?)**를 누릴 수 있습니다.
