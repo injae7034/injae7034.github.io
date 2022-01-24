@@ -277,8 +277,7 @@ public class VisitingCardBinder implements Cloneable
                     //","위치 다음을 시작위치로 재설정한다.
                     beginIndex = endIndex + 1;
                     //emailAddress를 구한다.
-                    emailAddress = personalInformation.substring(beginIndex,
-                            personalInformation.length());
+                    emailAddress = personalInformation.substring(beginIndex);
                     //읽은 외부데이터로부터 회사의 정보를 구한다.
                     //RandomAcceesFile의 경우 앞의 2자리는 자리수를 나타내기 때문에 2부터 초기화하여 시작한다.
                     beginIndex = 2;
@@ -310,7 +309,7 @@ public class VisitingCardBinder implements Cloneable
                     //","위치 다음을 시작위치로 재설정한다.
                     beginIndex = endIndex + 1;
                     //url 문자열을 구한다.
-                    url = companyInformation.substring(beginIndex, companyInformation.length());
+                    url = companyInformation.substring(beginIndex);
                     //외부에서 읽은 개인의 정보와 회사의 정보로 명함을 생성한다.
                     visitingCard = new VisitingCard(personalName, position, cellularPhoneNumber,
                             emailAddress, companyName, address, telephoneNumber, faxNumber, url);
@@ -360,13 +359,10 @@ AND의 특성상 앞으 조건이 일치하지 않으면 뒤의 조건은 들어
 그리고 while 반복문 내부에서 i++을 통해 1이 증가되면 이제 i=1이고 다시 조건문으로 가면 여전히 i = 1 < code(=2)이기 때문에 다음 조건문으로 가서 Company.txt의 두번째 데이터인 "현대자동차"를 읽게 됩니다.<br><br>
 그리고 반복구조를 들어가서 i++을 하면 이제 i = 3이 되고, 다시 반복구조로 가면 i = 3 < code(=2)이기 때문에 다음 조건은 실행하지도 않고 바로 반복구조를 벗어나게 됩니다.<br><br>
 이렇게 되면 Personal.txt에 회사코드가 2번이었고, 우리는 Company.txt의 두번째인 "현대자동차"를 읽게 됩니다.<br><br>
-이제 beginIndex를 콤마(,)위치 다음으로 이동시키고(각 필드는 콤마로 구분되어 있도록 save에서 저장했음) endIndex에는 다음 콤마위치를 저장합니다.<br><br>
+이제 **beginIndex를 콤마(,)위치 다음으로 이동**시키고(각 필드는 콤마로 구분되어 있도록 save에서 저장했음) **endIndex에는 다음 콤마위치를 저장**합니다.<br><br>
 그리고 이 위치를 이용하여 제일 처음 while반복문을 시작할 때 읽은 personalInformation(개인정보 String)의 substring를 통해 다음 필드인 개인의 성명을 추출할 수 있습니다.<br><br>
 이러한 방식으로 성명, 직책, 휴대폰번호까지 구합니다.<br><br>
-마지막으로 이메일 정보를 구할 때는 더이상 뒤에 콤마가 없기 때문에(각 필드를 콤마로 구분하기 때문에 당연히 마지막 필드인 이메일 뒤에는 콤마가 없습니다.) substring의 매개변수로 **endIndex = 문자열의 길이**(personalInformation.length())를 입력합니다.<br><br>
-substring의 경우 beginIndex는 포함하지만 endIndex는 포함하지 않습니다.<br><br>
-즉, 매개변수로 입력받은 beginIdnex부터 endIndex - 1까지 문자열을 추출합니다.<br><br>
-그래서 문자열의 길이를 endIndex로 입력하면 개수는 1부터 시작하고, 문자열의 위치는 배열을 기반으로 하여 0부터 시작하기 때문에 정확하게 일치합니다.<br><br>
+마지막으로 **이메일 정보를 구할 때는 더이상 뒤에 콤마가 없고**(각 필드를 콤마로 구분하기 때문에 당연히 마지막 필드인 이메일 뒤에는 콤마가 없습니다.), **마지막 문자열**이기 때문에 **substring의 매개변수로 endIndex는 필요없고, beginIndex만 입력**합니다.<br><br>
 그러면 이제 Personal.txt에서 처음 읽은 한 줄의 개인 정보는 추출하였고, 다음으로는 Company.txt에서 읽은 회사정보를 추출할 차례입니다.<br><br>
 Personal.txt의 경우 제일 앞에 저장된 회사코드를 읽을 때 beginIndex = 0 부터 시작하였는데, Company.txt는 제일 첫번째 필드인 상호명을 읽기 위해서 **beginIndex = 2부터 시작**합니다.<br><br>
 왜 그럴까요?<br><br>
@@ -375,7 +371,7 @@ Personal.txt의 경우 제일 앞에 저장된 회사코드를 읽을 때 beginI
 그래서 **회사 정보를 추출할 때는 앞의 두자리를 제외하고 추출**해야 오류가 생기지 않습니다.<br><br>
 그래서 beginIndex = 2부터 시작하여 endIndex = 콤마위치(,)를 매개변수로 하여 companyInformation의 substring을 하여야 정확하게 상호명을 추출할 수 있습니다.<br><br>
 이 후 주소, 전화번호, 팩스번호는 Personal정보를 추출할 때와 똑같이 endIndex를 다음 콤마위치로 설정해주시면 되고, beginIndex는 콤마 다음 위치로 설정하면 해당 필드를 정확하게 추출할 수 있습니다.<br><br>
-그리고 마지막 필드인 홈페이지주소 역시 Personal에서 했던 것과 동일하게 endIndex로 companyInformation.length()를 입력해주면 됩니다.<br><br>
+그리고 마지막 필드인 홈페이지주소 역시 뒤에 콤마가 없고, 마지막 문자열이기 때문에 **substring의 매개변수로 endIndex는 필요없고, beginIndex만 입력**합니다.<br><br>
 이렇게 추출한 9개의 필드 정보를 통해 새로운 명함을 생성합니다.<br><br>그리고 새로 생성한 명함을 명함철에 끼웁니다.(takeIn)<br><br>
 여기까지가 반복문의 한 사이클입니다.<br><br>
 그럼 다시 제일 위의 while반복문의 조건으로 가서 **(personalInformation = personalBufferedReader.readLine()) != null**을 실행하고 같은 사이클을 반복합니다.<br><br>
