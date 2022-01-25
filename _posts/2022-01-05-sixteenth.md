@@ -74,26 +74,17 @@ toc_sticky: true
 ```java
 public class VisitingCardBinder implements Cloneable
 {
-     //명함철에 있는 명함 정보를 외부파일에 저장하기
+    //명함철에 있는 명함 정보를 외부파일에 저장하기
     public void save()
     {
         //해당위치에 있는 data를 읽어 File객체를 생성한다.
         File personalFile = new File("Personal.txt");
-        File companyFile = new File("Company.txt");
-        //RandomAccessFile은 무조건 이어쓰기떄문에 File의 내용을 초기화해주기 위해 삭제한다.
-        //companyFile이 있으면
-        if(companyFile.exists() == true)
-        {
-            //해당 파일을 지운다.
-            companyFile.delete();
-        }
         //출력을 위한 스트림을 생성한다.
         try(Writer personalWriter = new FileWriter(personalFile);
             BufferedWriter personalBufferedWriter = new BufferedWriter(personalWriter);
             RandomAccessFile companyAccessFile = new RandomAccessFile("Company.txt", "rw");)
         {
             String companyInformation = "";//외부파일에서 회사정보를 담을 공간
-            String companyName = "";//회사명을 담을 임시공간
             int companyCode = 0;//회사코드로 사용
             //명함철의 마지막 명함까지 반복한다.
             for(VisitingCard visitingCard : this.visitingCards)
@@ -110,9 +101,9 @@ public class VisitingCardBinder implements Cloneable
                             getBytes("iso-8859-1"), "utf-8");
                     //RandomAccess의 writeUTF는 앞에 2byte에 길이를 같이 써서 출력하기 때문에
                     //상호 앞에 이를 제외하고 읽어야함.
-                    companyName = companyInformation.substring(2, companyInformation.indexOf(","));
                     // 외부 회사파일의 상호명과 명함철에서 읽은 명함의 상호명과 서로 같으면
-                    if(companyName.equals(visitingCard.getCompanyName()) == true)
+                    if(companyInformation.substring(2, companyInformation.indexOf(","))
+                            .equals(visitingCard.getCompanyName()) == true)
                     {
                         break;
                     }
@@ -123,16 +114,14 @@ public class VisitingCardBinder implements Cloneable
                 if(companyInformation == null)
                 {
                     //외부 회사파일에 중복이 안된 명함의 회사 정보를 출력한다.
-                    companyAccessFile.writeUTF(new String( visitingCard.getCompanyName()+
-                            "," + visitingCard.getAddress() + "," + visitingCard.getTelephoneNumber()
-                            + "," + visitingCard.getFaxNumber() + ","
-                            + visitingCard.getUrl() + "\n"));
+                    companyAccessFile.writeUTF(visitingCard.getCompanyName()+ ","
+                            + visitingCard.getAddress() + "," + visitingCard.getTelephoneNumber() +
+                            "," + visitingCard.getFaxNumber() + "," + visitingCard.getUrl() + "\n");
                 }
                 //외부 개인파일에 개인 정보를 출력한다.
-                personalBufferedWriter.write(new String(Integer.toString(companyCode) + "," +
-                        visitingCard.getPersonalName() + "," +  visitingCard.getPosition()
-                        + "," + visitingCard.getCellularPhoneNumber() + ","
-                        + visitingCard.getEmailAddress() + "\n"));
+                personalBufferedWriter.write(companyCode + "," +
+                        visitingCard.getPersonalName() + "," + visitingCard.getPosition() + "," +
+                        visitingCard.getCellularPhoneNumber() + "," + visitingCard.getEmailAddress() + "\n");
             }
             personalBufferedWriter.flush();
         } catch (IOException e) { e.printStackTrace(); }
@@ -376,6 +365,168 @@ Personal.txt의 경우 제일 앞에 저장된 회사코드를 읽을 때 beginI
 여기까지가 반복문의 한 사이클입니다.<br><br>
 그럼 다시 제일 위의 while반복문의 조건으로 가서 **(personalInformation = personalBufferedReader.readLine()) != null**을 실행하고 같은 사이클을 반복합니다.<br><br>
 이 후 while반복문이 끝나면 명함철의 명함 개수를 반환하면서 load메소드가 종료됩니다.
+
+# load 메소드 개선하기
+현재 load메소드는 String의 substring메소드를 사용하고 있기 때문에 코드가 굉장히 길고 복잡합니다.<br><br>
+이러한 문제를 해결하기 위한 2가지 방법이 있습니다.
+
+## String의 split메소드 사용하기
+```java
+    //외부 파일에 있는 정보를 읽어서 VisitingCardBinder에 Load하기(split사용하기)
+    public int load()
+    {
+        //해당위치에 있는 data를 읽어 File객체를 생성한다.
+        File personalFile = new File("Personal.txt");
+        File companyFile = new File("Company.txt");
+        //해당 위치에 파일이 존재하면
+        if(personalFile.exists() == true && companyFile.exists() == true)
+        {
+            //입력을 위한 스트림을 생성한다.
+            try(Reader personalReader = new FileReader(personalFile);
+                BufferedReader personalBufferedReader = new BufferedReader(personalReader);
+                RandomAccessFile companyAccessFile = new RandomAccessFile("Company.txt", "r");)
+            {
+                VisitingCard visitingCard = null;//visitingCard를 임시저장할 공간
+                String personalInformation = "";//한줄단위로 읽은 개인 데이터를 저장할 임시공간
+                String companyInformation = "";//한줄단위로 읽은 회사 데이터를 저장할 임시공간
+                String[] personalTokens = null;//한줄단위로 읽은 개인데이터를 콤마단위로 분리해서 저장하는 배열
+                String[] companyTokens = null;//한줄단위로 읽은 회사데이터를 콤마단위로 분리해서 자장하는 배열
+                int companyCode = 0;//한줄단위로 읽은 데이터 중에서 개인의 회사코드를 정수로 변경할 공간
+                int i = 0;//반복제어변수
+                //개인데이터를 파일의 마지막까지 읽는다.
+                while((personalInformation = personalBufferedReader.readLine()) != null)
+                {
+                    //한줄 단위로 읽은 개인데이터를 콤마(,)단위로 분리해서 문자열 배열에 저장한다.
+                    personalTokens = personalInformation.split(",");
+                    //분리한 개인데이터의 개수가 5이면
+                    if(personalTokens.length == 5)
+                    {
+                        //companyCode를 정수로 바꿔준다.
+                        companyCode = Integer.parseInt(personalTokens[0]);
+                        //회사파일을 파일의 처음으로 이동시킨다.
+                        companyAccessFile.seek(0);
+                        //companyCode까지 반복하면서 그리고 회사파일이 끝이 아닐동안 반복한다.
+                        i = 0;
+                        while(i < companyCode &&
+                                (companyInformation = companyAccessFile.readLine()) != null)
+                        {
+                            i++;
+                        }
+                        //RandomAccessFile로 읽으면 한글이 깨지기 때문에 이를 안깨지게 정상화처리해줌
+                        companyInformation = new String(companyInformation.
+                                getBytes("iso-8859-1"), "utf-8");
+                        //RandomAccessFile로 읽으면 앞의 2자리는 자리수를 의미하는데 이를 제외시킴.
+                        companyInformation = companyInformation.substring(2);
+                        //한줄 단위로 읽은 회사데이터를 콤마(,)단위로 분리해서 문자열 배열에 저장한다.
+                        companyTokens = companyInformation.split(",");
+                        //분리한 회사 데이터가 5개이면
+                        if(companyTokens.length == 5)
+                        {
+                            //외부에서 읽은 개인의 정보와 회사의 정보로 명함을 생성한다.
+                            visitingCard = new VisitingCard(personalTokens[1], personalTokens[2],
+                                    personalTokens[3], personalTokens[4], companyTokens[0],
+                                    companyTokens[1], companyTokens[2], companyTokens[3], companyTokens[4]);
+                            //명함을 명함철에 끼운다.
+                            this.takeIn(visitingCard);
+                        }
+                    }
+                }
+            } catch (IOException e) { e.printStackTrace(); }
+        }
+        //load한 명함 수를 반환한다.
+        return this.length;
+    }
+```
+String클래스의 split메소드를 이용하여 매개변수로 구분할 기준에 콤마(,)를 입력합니다.<br><br>
+그럼 반환값으로 콤마(,)를 기준으로 분리된 문자열 배열이 반환됩니다.<br><br>
+외부개인데이터가 save될 떄 정상적으로 save되었다면 현재 개인정보 문자열 배열의 개수는 5일 것이고,<br><br>
+외부회사데이터가 save될 때 정상적으로 save되었다면 현쟈 회사정보 문자열 배열의 개수도 5일 것입니다.<br><br>
+이 개수를 확인하여 정상이면 <br><br>
+각 배열요소(personalTokens[1], personalTokens[2], personalTokens[3], personalTokens[4], companyTokens[0], companyTokens[1], companyTokens[2], companyTokens[3], companyTokens[4])들을 매개변수로 하는<br><br>
+(참고로 personalTokens[0]은 companycode가 저장되어 있어서 VisitingCard에서는 사용되지 않음)<br><br>
+VisitingCard 생성자를 이용해 객체를 생성한 다음에 이를 명함철에 takeIn해줍니다.<br><br>
+보시다시피 substring을 사용하는 것보다 코드양이 확 줄어든 것을 알 수 있습니다.
+
+## StringTokenizer 클래스 이용하기
+```java
+    //외부 파일에 있는 정보를 읽어서 VisitingCardBinder에 Load하기(StringTokenizer사용하기)
+    public int load()
+    {
+        //해당위치에 있는 data를 읽어 File객체를 생성한다.
+        File personalFile = new File("Personal.txt");
+        File companyFile = new File("Company.txt");
+        //해당 위치에 파일이 존재하면
+        if(personalFile.exists() == true && companyFile.exists() == true)
+        {
+            //입력을 위한 스트림을 생성한다.
+            try(Reader personalReader = new FileReader(personalFile);
+                BufferedReader personalBufferedReader = new BufferedReader(personalReader);
+                RandomAccessFile companyAccessFile = new RandomAccessFile("Company.txt", "r");)
+            {
+                VisitingCard visitingCard = null;//visitingCard를 임시저장할 공간
+                String personalInformation = "";//한줄단위로 읽은 개인 데이터를 저장할 임시공간
+                String companyInformation = "";//한줄단위로 읽은 회사 데이터를 저장할 임시공간
+                StringTokenizer personalTokens = null;//한줄단위로 읽은 개인데이터를 콤마단위로 분리해서 저장하는 배열
+                StringTokenizer companyTokens = null;//한줄단위로 읽은 회사데이터를 콤마단위로 분리해서 자장하는 배열
+                int companyCode = 0;//한줄단위로 읽은 데이터 중에서 개인의 회사코드를 정수로 변경할 공간
+                int i = 0;//반복제어변수
+                //개인데이터를 파일의 마지막까지 읽는다.
+                while((personalInformation = personalBufferedReader.readLine()) != null)
+                {
+                    //한줄 단위로 읽은 개인데이터를 콤마(,)단위로 분리해서 저장한다.
+                    personalTokens = new StringTokenizer(personalInformation, ",");
+                    //분리한 개인데이터의 개수가 5이면
+                    if(personalTokens.countTokens() == 5)
+                    {
+                        //companyCode를 정수로 바꿔준다.
+                        companyCode = Integer.parseInt(personalTokens.nextToken());
+                        //회사파일을 파일의 처음으로 이동시킨다.
+                        companyAccessFile.seek(0);
+                        //companyCode까지 반복하면서 그리고 회사파일이 끝이 아닐동안 반복한다.
+                        i = 0;
+                        while(i < companyCode &&
+                                (companyInformation = companyAccessFile.readLine()) != null)
+                        {
+                            i++;
+                        }
+                        //RandomAccessFile로 읽으면 한글이 깨지기 때문에 이를 안깨지게 정상화처리해줌
+                        companyInformation = new String(companyInformation.
+                                getBytes("iso-8859-1"), "utf-8");
+                        //RandomAccessFile로 읽으면 앞의 2자리는 자리수를 의미하는데 이를 제외시킴.
+                        companyInformation = companyInformation.substring(2);
+                        //한줄 단위로 읽은 회사데이터를 콤마(,)단위로 분리해서 문자열 배열에 저장한다.
+                        companyTokens = new StringTokenizer(companyInformation, ",");
+                        //분리한 회사 데이터가 5개이면
+                        if(companyTokens.countTokens() == 5)
+                        {
+                            //외부에서 읽은 개인의 정보와 회사의 정보로 명함을 생성한다.
+                            visitingCard = new VisitingCard(personalTokens.nextToken(),
+                                    personalTokens.nextToken(), personalTokens.nextToken(),
+                                    personalTokens.nextToken(), companyTokens.nextToken(),
+                                    companyTokens.nextToken(), companyTokens.nextToken(),
+                                    companyTokens.nextToken(), companyTokens.nextToken());
+                            //명함을 명함철에 끼운다.
+                            this.takeIn(visitingCard);
+                        }
+                    }
+                }
+            } catch (IOException e) { e.printStackTrace(); }
+        }
+        //load한 명함 수를 반환한다.
+        return this.length;
+    }
+```
+StringTokenizer클래스의 객체를 생성할 때 매개변수로 분리할 문자열인 personalInformation과 companyInformation<br><br>
+분리할 기준인 콤마(,)를 각각 매개변수로 입력합니다.<br><br>
+그러면 personalTokens에는 personalInformation이 콤마(,)기준으로 분리되고,<br><br>
+companyTokens에는 companyInformation이 콤마(,)기준으로 분리되어 저장될 것입니다.
+외부 파일이 정상적으로 save되었다면 personalTokens과 companyTokens의 countTokens메소드의 반환값이 각각 5일텐데 이를 확인하여 정상이면<br><br>
+VisitingCard객체를 생성합니다.<br><br>
+VisitingCard객체를 생성할 때 매개변수로 StringTokenizer클래스의 nextToken메소드를 이용합니다.<br><br>
+personalTokens에서 처음 nextToken메소드를 호출하면 반환값이 name일 것이고, 다음에 nextToken를 호출하면 position이 반환될 것입니다.<br><br>
+companyTokens에서 처음 nextToken메소드를 호출하면 반환값이 companyName일 것이고, 다음에 nextToken를 호출하면 address가 반환될 것입니다.
+이런식으로 nextToken메소드를 매개변수로 9번 입력하여 VisitingCard객체를 생성한 다음 이를 명함철에에 takeIn합니다.<br><br>
+이 방식 역시 substring에 비하면 획기적으로 코드를 줄일 수 있습니다.
 
 # 마치며
 이번 시간에는 **VisitingCardBinder의 입출력 메소드인 load와 save를 구현하면서 필요한 파일의 개수와 그 이유, 이에 따른 문제점과 해결책, 그리고 이를 구현할 때 왜 RandomAccessFile이 필요한지를 배웠습니다.**
