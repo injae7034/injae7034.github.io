@@ -2,7 +2,7 @@
 layout: single
 title:  "소프트웨어 개발의 지혜 - 스프링 편 1주차 회고"
 categories: Java
-tag: [Java, 코드숨]
+tag: [Java, 코드숨, REST API]
 toc: true
 toc_label: "목차"
 toc_sticky: true
