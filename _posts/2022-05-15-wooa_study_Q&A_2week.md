@@ -116,6 +116,49 @@ public class RecordPersonalCommand
 
 즉, 웹 화면 상에서 바로 처리할 수 있으면 웹 어댑터의 입력 모델이 검증해야 할 몫이고, 그게 아니고 데이터베이스에 접근할 필요가 있는 경우는 유스케이스의 입력 모델이 검증해야 할 몫입니다.  
 
+## 웹 어댑터 입력 모델과 유스케이스 입력 모델의 차이점을 바탕으로 코드 리팩토링
+현재 위의 두 입력 모델에서는 입력 유효성을 검증하는 것에서 중복이 있습니다.  
+
+즉, 웹 어댑터의 입력 모델에서 이미 입력 유효 검증을 마친 것을 유스케이스 입력 모델에서 불필요하게 중복으로 다시 입력 유효성을 검증하고 있습니다.  
+
+이제 위에서 언급한 차이점을 바탕으로 리팩토링하여 각 코드들의 중복을 제거해보려고 합니다.  
+
+현재 제가 구현하고 있는 주소록 프로그램에서는 아이디가 없기 때문에 아이디를 검증하지 못하는 것이 아쉽기는 합니다만 일단 주어진 조건에 대해서 웹 어댑터와 유스케이스의 입력 모델에 대한 차이를 바탕으로 코드를 리팩토링합니다.  
+
+## 리팩토링한 유스케이스의 입력 모델
+```java
+@Value
+@EqualsAndHashCode(callSuper = false)
+public class RecordPersonalCommand
+        extends PersonalCommandValidating<RecordPersonalCommand> {
+
+    @NotNull
+    private final String name;
+    @NotNull
+    private final String address;
+    @NotNull
+    private final String telephoneNumber;
+
+    private final String emailAddress;
+
+    public RecordPersonalCommand(String name, String address,
+                                 String telephoneNumber, String emailAddress) {
+        this.name = name;
+        this.address = address;
+        this.telephoneNumber = telephoneNumber;
+        this.emailAddress = emailAddress;
+        this.validatePersonalCommand();
+    }
+}
+```
+이름과 주소, 전화번호에 NotEmpty 애너테이션을 제거하였습니다.  
+
+그 이유는 웹 어댑터의 입력 모델에서 이미 비어있는 경우 예외를 발생시키기 때문에 유스케이스에서는 별도로 이에 대한 처리를 해 줄 필요가 없기 때문입니다.  
+
+또한 이메일의 이메일 애너테이션도 제거하였는데 이것도 마찬가지로 웹 어댑터의 입력 모델에서 이메일 형식을 지키도록 강제하고 있기 때문에 유스케이스에서는 더이상 이메일 형식을 불필요하게 다시 체크할 필요가 없습니다.  
+
+웹 어댑터의 경우 코드가 기존과 똑같기 때문에 별도로 수정할 필요가 없습니다.  
+
 이상으로 제가 질문한 1가지에 대한 Q&A를 마칩니다.  
 
 이 답변은 스터디시간에 실무자분들이 이야기해준 것을 그대로 적은 것이 아닙니다.(제가 완전히 모든 대화 내용을 기억하지 못합니다ㅠ)  
