@@ -1,6 +1,6 @@
 ---
 layout: single
-title: "헥사고날-아키텍쳐로-구현하는-작은-스프링-부트-토이-프로젝트-주소록"
+title: "헥사고날-아키텍쳐로-구현하는-작은-스프링-부트-토이-프로젝트-주소록-상"
 categories: Java
 tag: [Java, 우아한스터디, 만들면서 배우는 클린 아키텍쳐, 스프링 입문, 스프링 핵심 원리 기본편, 스프링 부트와 JPA 활용, 김영한]
 toc: true
@@ -114,4 +114,77 @@ addressbook
 ```
 만들면서 배우는 클린 아키텍처 책을 읽으면서 이 내용을 적용하여 토이프로젝트를 진행하다 보니 이 간단한 프로젝트에도 수많은 클래스와 패키지가 생겼습니다.  
 
+## 패키지 구성에 대한 간략한 설명
+원래는 AddressBook 또는 PersonalService라는 넓은 서비스에서 주소록에 새로운 개인을 기재하거나(record) 주소록에 저장된 한 명의 개인 정보를 구하거나 모든 개인의 정보를 구하거나(get) 주소록에서 이름으로 찾는다거나(findByName) 주소록에서 개인의 정보를 지우는 것 모두 다뤘습니다.  
 
+그러나 책에서는 이렇게 넓은 서비스보다는 서비스의 각 메소드 즉, 각 유스케이스마다 인터페이스를 만들고 이를 구현하는 세분화된 클래스를 생성하는 것을 추천하여 이를 반영하여 주소록에서도 세분화된 유스케이스 인터페이스와 이를 구현한 서비스 클래스를 생성하였습니다.  
+
+여기서 더 나아가 세분화된 서비스에 맞게 repository와 controller 모두 세분화시켰습니다.  
+
+## personal 패키지의 domain 패키지
+domain 패키지 아래에는 Personal 클래스 하나가 있습니다.  
+
+책에서는 domain에 엔티티 클래스와 별도로 데이터베이스와 연동되는 영속성 전용 엔티티를 구성할 것을 이야기하고 있지만 그렇다면 도메인의 엔티티와 영속성 엔티티와의 맵핑과정이 필요한데 아직 이에 대한 구현을 위한 이해가 부족하여 저는 엔티티 클래스에서 바로 데이터베이스와 연동되도록 설정하였습니다.  
+
+```java
+package injae.AddressBook.personal.domain;
+
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+@Entity
+@Getter
+@NoArgsConstructor
+@EqualsAndHashCode
+@ToString(exclude = "id")
+public class Personal {
+
+    @Id @GeneratedValue
+    @Column(name = "personal_id")
+    private Long id;
+
+    private String name;
+    private String address;
+    private String telephoneNumber;
+    private String emailAddress;
+
+    public Personal(Long id, String name, String address,
+                    String telephoneNumber, String emailAddress) {
+        this.id = id;
+        this.name = name;
+        this.address = address;
+        this.telephoneNumber = telephoneNumber;
+        this.emailAddress = emailAddress;
+    }
+
+    public Personal(String name, String address,
+                    String telephoneNumber, String emailAddress) {
+        this(null, name, address, telephoneNumber, emailAddress);
+    }
+
+    public void changePersonalInfo(Personal personal) {
+        String address = personal.getAddress();
+        if (this.address.compareTo(address) != 0) {
+            this.address = address;
+        }
+
+        String telephoneNumber = personal.getTelephoneNumber();
+        if (this.telephoneNumber.compareTo(telephoneNumber) != 0) {
+            this.telephoneNumber = telephoneNumber;
+        }
+
+        String emailAddress = personal.getEmailAddress();
+        if (this.emailAddress.compareTo(emailAddress) != 0) {
+            this.emailAddress = emailAddress;
+        }
+    }
+
+}
+```
