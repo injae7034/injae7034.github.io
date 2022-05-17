@@ -319,3 +319,126 @@ ErasePersonalRepository의 delete 메서드를 오버라이딩하여 메서드 �
 
 이를 통해 데이터베이스의 Personal 테이블에서 있는 데이터 중에 입력 받은 Personal 객체에 해당하는 데이터를 구하여 해당 데이터를 지웁니다.  
 
+# in 패키지
+in 패키지 아래에는 web패키지가 있습니다.  
+
+# web 패키지
+web 패키지 아래에는 correct, erase, find, record 패키지지와 HomeController 클래스가 있습니다.  
+
+# HomeController 클래스
+```java
+package injae.AddressBook.personal.adapter.in.web;
+
+import injae.AddressBook.personal.application.port.in.get.GetPersonalsQuery;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Controller
+@RequiredArgsConstructor
+@Slf4j
+public class HomeController {
+
+    private final GetPersonalsQuery useCase;
+
+    @RequestMapping("/")
+    public String home(Model model) {
+        log.info("home controller");
+        model.addAttribute("personals", useCase.getPersonals());
+        return "home";
+    }
+
+}
+```
+HomeController클래스는 스프링 MVC 컨트롤러에서 사용하는 Controller 애너테이션을 사용하여 기본적으로 컴포넌트 스캔의 대상이 됩니다.  
+
+Slf4j 애너테이션을 통해 로깅을 할 수 있고, 여기서는 home controller라는 문자를 로깅하고 있습니다.  
+
+RequestMapping 애너테이션을 통해 localHost8080으로 접속하면 home 메소드를 호출하게 됩니다.  
+
+RequestMapping의 경우 경로만 입력하고, 뒤에 http 메소드를 따로 적어주지 않으면 get으로 인식합니다.  
+
+저는 홈 화면에서 주소록에 저장된 모든 개인의 정보를 표 형식으로 출력하도록 설계하였습니다.  
+
+그래서 HomeController는 필드멤버로 GetPersonalsQuery 인터페이스를 멤버로 가집니다.  
+
+스프링에 의해 이 인터페이스를 구현하는 구현체가 자동으로 주입되기 때문에 HomeController는 GetPersonalsQuery의 구현체가 무엇인지 알 필요없이 GetPersonalsQuery의 메소드인 getPersonals를 호출하면 됩니다.  
+
+매개변수로 입력 받은 Model 객체의 메소드인 addAttribute를 통해 웹화면에서 사용할 정보를 전달합니다.  
+
+이 때 웹화면에서 사용할 이름을 personals로 정하고 거기에 getPersonals를 통해 주소록의 모든 개인 정보를 저장합니다.  
+
+그리고 home 문자열을 반환하면 스프링에서 resources 패키지에 있는 templetes의 패키지 아래에 있는 home.html로 연결시켜줍니다.  
+
+저는 이 home.html을 타임리프를 활용해 구현하였습니다.  
+
+## home.html 코드
+```html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header">
+    <meta http-equiv="Content-Type" content="text/html"; charset="UTF-8" />
+    <title>Title</title>
+</head>
+<body>
+<div class="container">
+    <div th:replace="fragments/bodyHeader :: bodyHeader" />
+    <div class="jumbotron">
+        <p>
+            <a class="btn btn-lg btn-secondary" href="/record">기재하기</a>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <a class="btn btn-lg btn-dark" href="/find">이름으로 찾기</a>
+        </p>
+        <br>
+    </div>
+    <div>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>이름</th>
+                <th>주소</th>
+                <th>전화번호</th>
+                <th>이메일주소</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="personal : ${personals}">
+                <td th:text="${personal.name}"></td>
+                <td th:text="${personal.address}"></td>
+                <td th:text="${personal.telephoneNumber}"></td>
+                <td th:text="${personal.emailAddress}"></td>
+                <td>
+                    <a href="#" th:href="@{/correct/{id} (id=${personal.id})}"
+                       class="btn btn-primary" role="button">수정</a>
+                </td>
+                <td>
+                    <a href="#" th:href="'javascript:erase('+${personal.id}+')'"
+                       class="btn btn-danger" role="button">지우기</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div th:replace="fragments/footer :: footer" />
+</div> <!-- /container -->
+</body>
+<script>
+function erase(id){
+    if (confirm("정말 삭제하시겠습니까??") == true){    //확인
+        var form = document.createElement("form");
+        form.setAttribute("method", "get");
+        form.setAttribute("action", "/erase/" + id);
+        document.body.appendChild(form);
+        form.submit();
+    }else{   //취소
+        return;
+    }
+}
+</script>
+</html>
+```
+
+## home.html 화면
+![calculate결과](../../images/2022-05-17-addressbook_web_project_03/홈화면.JPG)
