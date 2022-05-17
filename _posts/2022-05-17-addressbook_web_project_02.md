@@ -7,3 +7,5 @@ toc: true
 toc_label: "목차"
 toc_sticky: true
 ---
+<a href="https://injae7034.github.io/java/addressbook_web_project_01/" target="_blank">도메인 패키지</a>를 구성했기 때문에 다음으로는 애플리케이션 패키지 구성을 합니다.  
+
