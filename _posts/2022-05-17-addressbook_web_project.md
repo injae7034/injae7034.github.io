@@ -39,76 +39,76 @@ addressbook
 |    |____PersonalCommandValidating
 |
 |____personal
-     |____adapter
-     |    |____in
-     |    |    |____web
-     |    |         |____correct
-     |    |         |    |____CorrectPersonalController
-     |    |         |    |____CorrectPersonalForm
-     |    |         |
-     |    |         |____erase
-     |    |         |    |____ErasePersonalController
-     |    |         |
-     |    |         |____find
-     |    |         |    |____FindPersonalController
-     |    |         |    |____FindPersonalForm
-     |    |         |
-     |    |         |____record
-     |    |         |    |____RecordPersonalController
-     |    |         |    |____RecordPersonalForm
-     |    |         |
-     |    |         |____HomeController
-     |    |
-     |    |____out
-     |         |____persistence
-     |              |____JpaCorrectPersonalRepository
-     |              |____JpaErasePersonalRepository
-     |              |____JpaFindPersonalRepositroy
-     |              |____JpaGetPersonalRepositroy
-     |              |____JpaGetPersonalsRepository
-     |              |____JpaRecordPersonalRepository
-     |
-     |____application
-     |    |____port
-     |    |    |____in
-     |    |    |    |____correct
-     |    |    |    |    |____CorrectPersonalCommand
-     |    |    |    |    |____CorrectPersonalUsecase
-     |    |    |    |
-     |    |    |    |____erase
-     |    |    |    |    |____ErasePersonalUseCase
-     |    |    |    |
-     |    |    |    |____find
-     |    |    |    |    |____FindPersonalCommand
-     |    |    |    |    |____FindPersonalUseCase
-     |    |    |    |
-     |    |    |    |____get
-     |    |    |    |    |____GetPersonalCommand
-     |    |    |    |    |____GetPersonalQuery
-     |    |    |    |    |____GetPersonalsQuery
-     |    |    |    |
-     |    |    |    |____record
-     |    |    |         |____RecordPersonalCommand
-     |    |    |         |____RecordPersonalUseCase
-     |    |    |
-     |    |    |____out
-     |    |         |____CorrectPersoanlRepository
-     |    |         |____ErasePersonalRepository
-     |    |         |____FindPersonalRepository
-     |    |         |____GetPersonalRepository
-     |    |         |____GetPersonalsRepository
-     |    |         |____RecordPersonalRepository
-     |    |
-     |    |____service
-     |         |____CorrectPersonalService
-     |         |____ErasePersonalService
-     |         |____FindPersonalService
-     |         |____GetPersonalService
-     |         |____GetPersonalsService
-     |         |____RecordPersonalService
-     |
-     |____domain
-     |     |____Personal
-     |
-     |____AddressBookApplication
+|    |____adapter
+|    |    |____in
+|    |    |    |____web
+|    |    |         |____correct
+|    |    |         |    |____CorrectPersonalController
+|    |    |         |    |____CorrectPersonalForm
+|    |    |         |
+|    |    |         |____erase
+|    |    |         |    |____ErasePersonalController
+|    |    |         |
+|    |    |         |____find
+|    |    |         |    |____FindPersonalController
+|    |    |         |    |____FindPersonalForm
+|    |    |         |
+|    |    |         |____record
+|    |    |         |    |____RecordPersonalController
+|    |    |         |    |____RecordPersonalForm
+|    |    |         |
+|    |    |         |____HomeController
+|    |    |
+|    |    |____out
+|    |         |____persistence
+|    |              |____JpaCorrectPersonalRepository
+|    |              |____JpaErasePersonalRepository
+|    |              |____JpaFindPersonalRepositroy
+|    |              |____JpaGetPersonalRepositroy
+|    |              |____JpaGetPersonalsRepository
+|    |              |____JpaRecordPersonalRepository
+|    |
+|    |____application
+|    |    |____port
+|    |    |    |____in
+|    |    |    |    |____correct
+|    |    |    |    |    |____CorrectPersonalCommand
+|    |    |    |    |    |____CorrectPersonalUsecase
+|    |    |    |    |
+|    |    |    |    |____erase
+|    |    |    |    |    |____ErasePersonalUseCase
+|    |    |    |    |
+|    |    |    |    |____find
+|    |    |    |    |    |____FindPersonalCommand
+|    |    |    |    |    |____FindPersonalUseCase
+|    |    |    |    |
+|    |    |    |    |____get
+|    |    |    |    |    |____GetPersonalCommand
+|    |    |    |    |    |____GetPersonalQuery
+|    |    |    |    |    |____GetPersonalsQuery
+|    |    |    |    |
+|    |    |    |    |____record
+|    |    |    |         |____RecordPersonalCommand
+|    |    |    |         |____RecordPersonalUseCase
+|    |    |    |
+|    |    |    |____out
+|    |    |         |____CorrectPersoanlRepository
+|    |    |         |____ErasePersonalRepository
+|    |    |         |____FindPersonalRepository
+|    |    |         |____GetPersonalRepository
+|    |    |         |____GetPersonalsRepository
+|    |    |         |____RecordPersonalRepository
+|    |    |
+|    |    |____service
+|    |         |____CorrectPersonalService
+|    |         |____ErasePersonalService
+|    |         |____FindPersonalService
+|    |         |____GetPersonalService
+|    |         |____GetPersonalsService
+|    |         |____RecordPersonalService
+|    |
+|    |____domain
+|         |____Personal
+|    
+|____AddressBookApplication
 ```
