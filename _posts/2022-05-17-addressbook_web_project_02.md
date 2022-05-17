@@ -577,6 +577,7 @@ ErasePersonalRepository 인터페이스는 데이터베이스에 저장된 Perso
 서비스 패키지 아래에는 아까 세분화한 UseCase와 Query에 대한 인터페이스들을 구현한 클래스들이 위치합니다.  
 
 ## RecordPersonalService 클래스
+
 ```java
 package injae.AddressBook.personal.application.service;
 
@@ -607,3 +608,228 @@ public class RecordPersonalService implements RecordPersonalUseCase {
     }
 }
 ```
+
+### 애너테이션 설명
+롬복의 RequiredArgsConstructor 애너테이션을 통해 필드멤버에 final이 붙거나 @NotNull 이 붙은 필드의 생성자를 자동 생성해줍니다.  
+
+스프링은 Transactional 애너테이션이 붙은 클래스의 메서드를 실행할 때 트랜잭셕을 시작하고, 메서드가 정상적으로 종료되면 트랙잭션을 커밋합니다.  
+
+즉, 데이터베이스에 성공적으로 새로운 데이터가 저장됩니다.  
+
+도중에 런타임 예외가 발생한다면 롤백합니다.  
+
+데이터베이스에 새로운 데이터가 저장되지 않습니다.  
+
+Service 애너테이션의 경우 스프링 컨테이너의 Component 애너테이션을 내부적으로 담고 있어서 컴포넌트 스캔의 검색 대상으로 등록됩니다.  
+
+사실 Service는 Componenet 애너테이션과 큰 차이는 없지만 개발자들에게 명시적으로 Service라는 것을 보여주기 위해 서비스 클래스에 Component대신에 Service 애너테이션을 사용합니다.  
+
+### RecordPersonalUseCase 인터페이스 구현 및 Personal 객체 id 부여
+RecordPersonalService 클래스는 RecordPersonalUseCase를 구현하기 위해 recordPersonal메소드를 정의합니다.  
+
+매개변수 RecordPersonalCommand을 활용하여 새로운 Personal 객체를 생성합니다.  
+
+이 때 id를 제외한 매개변수를 가지는 생성자로 Personal 객체를 생성합니다.  
+
+그러면 이 **Personal 객체의 id는 null**일 것 입니다.  
+
+그리고 RecordPersonalService는 자신의 필드 멤버인 repository의 save 메소드를 호출하여 새롭게 생성된 Personal 객체를 데이터베이스 형식에 맞게 매핑하여 저장합니다.  
+
+이 때 **데이터베이스에 저장되면서 Personal의 id 필드멤버에 id가 자동으로 부여**됩니다.  
+
+그 이유는 아까 **Personal 클래스에서 id 필드멤버에 Id 애너테이션을 통해 id가 primary key**라고 설정하였고, **GeneratedValue 애너테이션을 통해 자동으로 id를 생성하도록 설정**하였습니다.  
+
+그래서 **repository의 save 메소드 호출 전에는 Personal 객체의 id가 null**인데 **save 호출 후에는 아이디가 부여**됩니다.  
+
+이제 personal.getId()를 호출하면 null대신에 부여된 아이디가 반환됩니다.  
+
+## GetPersonalsService 클래스
+
+```java
+package injae.AddressBook.personal.application.service;
+
+import injae.AddressBook.personal.application.port.in.get.GetPersonalsQuery;
+import injae.AddressBook.personal.application.port.out.GetPersonalsRepository;
+import injae.AddressBook.personal.domain.Personal;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@RequiredArgsConstructor
+@Transactional
+@Service
+public class GetPersonalsService implements GetPersonalsQuery {
+
+    private final GetPersonalsRepository repository;
+
+    @Override
+    public List<Personal> getPersonals() {
+        return repository.findAll();
+    }
+}
+```
+
+애너테이션과 구현에 대한 설명은 위의 RecordPersonalService와 동일합니다.  
+
+repository의 findAll메소드를 호출하고 데이터베이스에서 모든 Personal 테이블의 개인 정보를 List로 반환합니다.  
+
+## GetPersonalService 클래스
+
+```java
+package injae.AddressBook.personal.application.service;
+
+import injae.AddressBook.personal.application.port.in.find.FindPersonalCommand;
+import injae.AddressBook.personal.application.port.in.get.GetPersonalCommand;
+import injae.AddressBook.personal.application.port.in.get.GetPersonalQuery;
+import injae.AddressBook.personal.application.port.out.GetPersonalRepository;
+import injae.AddressBook.personal.domain.Personal;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@RequiredArgsConstructor
+@Transactional
+@Service
+public class GetPersonalService implements GetPersonalQuery {
+
+    private final GetPersonalRepository repository;
+
+    @Override
+    public Personal getPersonal(GetPersonalCommand command) {
+        return repository.findOne(command.getId());
+    }
+
+}
+```
+
+애너테이션과 구현에 대한 설명은 위의 RecordPersonalService와 동일합니다.  
+
+repository의 findOne메소드를 호출하고 데이터베이스에서 입력 받은 id에 해당하는 Personal 테이블의 개인 정보를 Personal 객체로 반환합니다.
+
+## FindPersonalService 클래스
+
+```java
+package injae.AddressBook.personal.application.service;
+
+import injae.AddressBook.personal.application.port.in.find.FindPersonalCommand;
+import injae.AddressBook.personal.application.port.in.find.FindPersonalUseCase;
+import injae.AddressBook.personal.application.port.out.FindPersonalRepository;
+import injae.AddressBook.personal.domain.Personal;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@RequiredArgsConstructor
+@Transactional
+@Service
+public class FindPersonalService implements FindPersonalUseCase {
+
+    private final FindPersonalRepository repository;
+
+    @Override
+    public List<Personal> findPersonalByName(FindPersonalCommand command) {
+        return repository.findByName(command.getName());
+    }
+}
+```
+
+애너테이션과 구현에 대한 설명은 위의 RecordPersonalService와 동일합니다.  
+
+repository의 findByName메소드를 호출하고 데이터베이스에서 입력 받은 이름에 해당하는 Personal 테이블의 개인 정보를 List로 반환합니다.(동명이인이 있을 수 있기 때문에 Personal 객체가 아니라 List로 반환함)
+
+## CorrectPersonalService 클래스
+
+```java
+package injae.AddressBook.personal.application.service;
+
+import injae.AddressBook.personal.application.port.in.correct.CorrectPersonalCommand;
+import injae.AddressBook.personal.application.port.in.correct.CorrectPersonalUseCase;
+import injae.AddressBook.personal.application.port.out.CorrectPersonalRepository;
+import injae.AddressBook.personal.domain.Personal;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@RequiredArgsConstructor
+@Transactional
+@Service
+public class CorrectPersonalService implements CorrectPersonalUseCase {
+
+    private final CorrectPersonalRepository repository;
+
+    @Override
+    public Long correctPersonal(CorrectPersonalCommand command) {
+        Personal personal = new Personal(
+                command.getId(),
+                command.getName(),
+                command.getAddress(),
+                command.getTelephoneNumber(),
+                command.getEmailAddress());
+
+        repository.update(personal);
+
+        return personal.getId();
+    }
+
+}
+```
+
+애너테이션과 구현에 대한 설명은 위의 RecordPersonalService와 동일합니다.  
+
+여기서 이제 CorrectPersonalCommand에 왜 Personal 객체와 동일하게 id, name, address, telephoneNumber, emailAddress가 모두 필요했는지 설명드리도록 하갰습니다.  
+
+이 서비스의 메소드는 Controller에서 호출될 것인데 이 때 웹에서 받은 정보를 그대로 입력받으면 안되고 유스케이스의 입력유효성을 거친 command를 매개변수로 입력 받아야 합니다.  
+
+id와 name은 웹에서 변경할 수 없지만 address나 telephone, emailAddress의 경우 웹에서 사용자가 수정할 수 있습니다.  
+
+그래서 사용자가 잘못 입력할 경우 데이터베이스에 유효하지 않은 정보가 저장될 수 있기 때문에 Service에서 로직을 실행하기 전에 입력 모델인 CorrectPersonalCommand에서 유효성을 검증해야합니다.  
+
+CorrectPersonalCommand가 입력유효성을 검증할 때 id와 name에 대한 검증을 할 필요는 없지만 만약에 id와 name에 대한 정보가 없으면 Personal객체를 새로 생성할 수 없습니다.  그래서 이를 위해 매개변수로 별도로 받거나 아니면 CorrectPersonalCommand의 멤버에 id와 name을 추가하여 정보를 저장하는 방법이 있는데 저는 매개변수를 여러 개 받는 전자의 방식보다는 하나의 매개변수만 받으면 되는 후자의 방식을 선택하였습니다.  
+
+즉, CorrectPersonalService는 correctPersonal 메소드 내부에서 매개변수로 입력받은 CorrectPersonalCommand 객체를 통해 새로운 Personal 객체를 생성합니다.  
+
+(참고로 이 새로 생성된 Personal 객체의 id와 name은 데이터베이스의 Personal 테이블에 같은 id와 name 데이터가 저장될 것입니다.  
+
+여기서 이 데이터베이스에 이미 저장된 데이터를 수정하기 위해 merge와 dirty-checking 2가지 방법이 있는데 둘 다 일단 새로운 Personal 객체를 생성할 필요가 있습니다.  
+
+저는 dirty-checking을 사용하여 데이터베이스에 정보를 수정할 것이고 이는 뒤에서 repository 구현체에서 더 자세히 설명하도록 하겠습니다.)  
+
+새롭게 생성된 Personal 객체를 repository의 update 메소드의 매개변수로 넘기고 Personal 객체의 id를 반환합니다.  
+
+## ErasePersonalService 메소드
+
+```java
+package injae.AddressBook.personal.application.service;
+
+import injae.AddressBook.personal.application.port.in.erase.ErasePersonalUseCase;
+import injae.AddressBook.personal.application.port.out.ErasePersonalRepository;
+import injae.AddressBook.personal.domain.Personal;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@RequiredArgsConstructor
+@Transactional
+@Service
+public class ErasePersonalService implements ErasePersonalUseCase {
+
+    private final ErasePersonalRepository repository;
+
+    @Override
+    public Personal erasePersonal(Personal personal) {
+        repository.delete(personal);
+
+        return personal;
+    }
+}
+```
+
+애너테이션과 구현에 대한 설명은 위의 RecordPersonalService와 동일합니다.  
+
+repository의 delete메소드를 호출하고 데이터베이스에서 입력 받은 Personal 객체에 해당하는 Personal 테이블의 개인 정보를 지웁니다.  
+
+그리고 지운 Personal 객체를 반환합니다.  
