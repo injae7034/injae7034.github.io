@@ -365,7 +365,6 @@ public interface FindPersonalUseCase {
 }
 ```
 
-
 내부에는 findPersonalByName 메소드 하나만 선언하고 있습니다.  
 
 입력 유효성 검증 역할을 하는 FindPersonalCommand를 매개변수로 받습니다.  
@@ -573,3 +572,38 @@ public interface ErasePersonalRepository {
 ```
 
 ErasePersonalRepository 인터페이스는 데이터베이스에 저장된 Personal 테이블의 데이터 중에서  매개변수로 입력 받은 Personal 객체에 해당하는 개인의 정보를 지우는 delete메소드를 선언하고 있습니다.  
+
+# 서비스 패키지
+서비스 패키지 아래에는 아까 세분화한 UseCase와 Query에 대한 인터페이스들을 구현한 클래스들이 위치합니다.  
+
+## RecordPersonalService 클래스
+```java
+package injae.AddressBook.personal.application.service;
+
+import injae.AddressBook.personal.application.port.in.record.RecordPersonalCommand;
+import injae.AddressBook.personal.application.port.in.record.RecordPersonalUseCase;
+import injae.AddressBook.personal.application.port.out.RecordPersonalRepository;
+import injae.AddressBook.personal.domain.Personal;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@RequiredArgsConstructor
+@Transactional
+@Service
+public class RecordPersonalService implements RecordPersonalUseCase {
+
+    private final RecordPersonalRepository repository;
+
+    @Override
+    public Long recordPersonal(RecordPersonalCommand command) {
+        Personal personal = new Personal(command.getName(),
+                command.getAddress(), command.getTelephoneNumber(),
+                command.getEmailAddress());
+
+        repository.save(personal);
+
+        return personal.getId();
+    }
+}
+```
