@@ -94,13 +94,13 @@ addressbook
 |____AddressBookApplication
 ```
 
-# 애플리케이션 패키지
-애플리케이션 페키지 아래에는 포트와 서비스 패키지가 있습니다.  
+# application 패키지
+application 패키지 아래에는 port와 service 패키지가 있습니다.  
 
-먼저 포트 패키지를 살펴보도록 하겠습니다.  
+먼저 port 패키지를 살펴보도록 하겠습니다.  
 
-# 포트 패키지
-포트 패키지 아래에는 in과 out 패키지가 있습니다.  
+# port 패키지
+port 패키지 아래에는 in과 out 패키지가 있습니다.  
 
 # in 패키지
 in 패키지 아래에는 correct, erase, find, get, record 패키지가 있습니다.  
