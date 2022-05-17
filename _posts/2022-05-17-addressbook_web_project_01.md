@@ -121,7 +121,12 @@ addressbook
 
 여기서 더 나아가 세분화된 서비스에 맞게 repository와 controller 모두 세분화시켰습니다.  
 
-# personal 패키지의 domain 패키지
+# personal 패키지
+personal 패키지 아래에는 adapter, application, domain 패키지가 있습니다.  
+
+현재 글에서는 domain 패키지에 대한 설명만 먼저 하고 다음 글에서 application과 adapter 패키지에 대한 설명을 하도록 하겠습니다.  
+
+# domain 패키지
 domain 패키지 아래에는 Personal 클래스 하나가 있습니다.  
 
 ## Personal 클래스
@@ -209,5 +214,6 @@ GeneratedValue 애너테이션을 통해 primary key를 자동으로 생성해�
 
 개인의 이름은 바꿀 수 없도록 막았고, 그 외의 필드는 모두 변경할 수 있도록 설정하였습니다.  
 
-
-
+# 글을 마치며
+이로써 personal 패키지 아래의 3개 패키지(adapter, application, domain) 중에서 domain 패키지에 대한 설명을 마치도록 하겠습니다.  
+다음 글에서 <a href="https://injae7034.github.io/java/addressbook_web_project_02/" target="_blank">application</a>에 대한 설명을 하도록 하겠습니다.  

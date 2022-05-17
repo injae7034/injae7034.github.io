@@ -7,11 +7,11 @@ toc: true
 toc_label: "목차"
 toc_sticky: true
 ---
-<a href="https://injae7034.github.io/java/addressbook_web_project_01/" target="_blank">도메인 패키지</a>를 구성했기 때문에 다음으로는 애플리케이션 패키지 구성을 합니다.  
+personal 3가지 패키지(adapter, application, domain) 중에서<a href="https://injae7034.github.io/java/addressbook_web_project_01/" target="_blank">domain 패키지</a>를 먼저 설명하였고, 다음으로는 application 패키지에 대한 설명을 하도록 하겠습니다.  
 
-글의 제일 처음은 도메인 패키지입니다.  
+이 글의 제일 처음은 domain 패키지입니다.  
 
-먼저 도메인 패키지 글을 읽는 것을 추천드립니다.  
+그래서 먼저 domain 패키지 글을 읽는 것을 추천드립니다.  
 
 # 패키지 구성
 ```java
@@ -423,7 +423,7 @@ public class CorrectPersonalCommand
 
 CorrectPersonalCommand에서 필드멤버가 Personal 클래스처럼 5개인 이유는 나중에 서비스에서 correct 기능을 수행할 때 CorrectPersonalCommand를 통해서 새로운 Personal 객체를 생성하기 위해서입니다.  
 
-이는 나중에 service 구현 코드에서 더 설명드리도록 하겠습니다.  
+이는 나중에 <a href="https://injae7034.github.io/java/addressbook_web_project_02/#correctpersonalservice-%ED%81%B4%EB%9E%98%EC%8A%A4" target="_blank">service 구현 코드</a>에서 더 자세하게 설명드리도록 하겠습니다.  
 
 ### CorrectPersonalUseCase 인터페이스
 CorrectPersonalUseCase는 넓은 서비스에서 correct라는 메소드, 즉, 주소록에서 이름을 제외한 개인의 정보를 수정하는 유스케이스를 세분화시킨 인터페이스입니다.  
@@ -833,3 +833,7 @@ public class ErasePersonalService implements ErasePersonalUseCase {
 repository의 delete메소드를 호출하고 데이터베이스에서 입력 받은 Personal 객체에 해당하는 Personal 테이블의 개인 정보를 지웁니다.  
 
 그리고 지운 Personal 객체를 반환합니다.  
+
+# 글을 마치며
+이로써 personal 패키지 아래의 3개 패키지(adapter, application, domain) 중에서 application 패키지에 대한 설명을 마치도록 하겠습니다.  
+다음 글에서 <a href="https://injae7034.github.io/java/addressbook_web_project_02/" target="_blank">adapter</a>에 대한 설명을 하도록 하겠습니다.  
