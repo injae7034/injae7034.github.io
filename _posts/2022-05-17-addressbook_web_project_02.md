@@ -468,3 +468,108 @@ public interface ErasePersonalUseCase {
 이는 나중애 Controller에서 GetPersonalQuery를 통해 찾은 Personal 객체를 그대로 매개변수로 사용하기 때문에 따로 입력 모델에 대한 검증이 필요가 없기 때문입니다.  
 
 이 역시 뒤에서 Controller 코드를 설명할 때 좀 더 구체적으로 설명하도록 하겠습니다.  
+
+# out 패키지
+out 패키지 아래에는 각 세분화된 서비스에 맞게 세분화된 repository 인터페이스들이 있습니다.  
+원래는 넓은 repository가 데이터베이스에 새로운 데이터를 저장하는 save나 데이터를 수정하는 update, 데이터를 하나 찾는 findOne, 데이터를 다 찾는 findAll, 데이터를 지우는 delete 등을 가지고 있는데 이를 모두 세분화하여서 각각의 메소드마다 모두 인터페이스화하여 분리하였습니다.  
+
+아웃고잉 어댑터(패키지에서 out.persistence 패키지 아래에 있는)의 영속성 계층의 구현체들 중에 하나가 이 세분화된 repository 인터페이스를 구현할 것입니다.  
+
+## RecordPersonalRepository 인터페이스
+
+```java
+package injae.AddressBook.personal.application.port.out;
+
+import injae.AddressBook.personal.domain.Personal;
+
+public interface RecordPersonalRepository {
+
+    void save(Personal personal);
+
+}
+```
+
+RecordPersonalRepository 인터페이스는 Personal 객체를 매개변수로 받는 save 메소드를 선언하고 있습니다.  
+
+## GetPersonalsRepository 인터페이스
+
+```java
+package injae.AddressBook.personal.application.port.out;
+
+import injae.AddressBook.personal.domain.Personal;
+
+import java.util.List;
+
+public interface GetPersonalsRepository {
+
+    List<Personal> findAll();
+
+}
+```
+GetPersonalsRepository 인터페이스는 데이터베이스에 저장된 모든 Personal 테이블의 데이터를 얻어오는 findAll 메소드를 선언하고 있습니다.  
+
+## GetPersonalRepository 인터페이스
+
+```java
+package injae.AddressBook.personal.application.port.out;
+
+import injae.AddressBook.personal.domain.Personal;
+
+public interface GetPersonalRepository {
+
+    Personal findOne(Long id);
+
+}
+```
+
+GetPersonalRepository 인터페이스는 데이터베이스에 저장된 Personal 테이블의 데이터 중 매개변수로 입력 받은 id에 해당하는 개인의 정보를 얻어 오는 findOne 메소드를 선언하고 있습니다.
+
+## FindPersonalRepository 인터페이스
+
+```java
+package injae.AddressBook.personal.application.port.out;
+
+import injae.AddressBook.personal.domain.Personal;
+
+import java.util.List;
+
+public interface FindPersonalRepository {
+
+    List<Personal> findByName(String name);
+
+}
+```
+
+FindPersonalRepository 인터페이스는 데이터베이스에 저장된 Personal 테이블의 데이터 중에서 매개변수로 입력 받은 name에 해당하는 개인들의 정보를 얻어 오는 findByName메소드를 선언하고 있습니다.  
+
+## CorrectPersonalRepository 인터페이스
+
+```java
+package injae.AddressBook.personal.application.port.out;
+
+import injae.AddressBook.personal.domain.Personal;
+
+public interface CorrectPersonalRepository {
+
+    void update(Personal personal);
+
+}
+```
+
+CorrectPersonalRepository 인터페이스는 매개변수로 입력 받은 Personal 객체에 저장된 데이터(변경된 데이터)를 통해 데이터베이스에 저장된 Personal 테이블의 데이터 중에서 해당하는 개인의 정보를 수정하는 update메소드를 선언하고 있습니다.  
+
+## ErasePersonalRepository 인터페이스
+
+```java
+package injae.AddressBook.personal.application.port.out;
+
+import injae.AddressBook.personal.domain.Personal;
+
+public interface ErasePersonalRepository {
+
+    void delete(Personal personal);
+
+}
+```
+
+ErasePersonalRepository 인터페이스는 데이터베이스에 저장된 Personal 테이블의 데이터 중에서  매개변수로 입력 받은 Personal 객체에 해당하는 개인의 정보를 지우는 delete메소드를 선언하고 있습니다.  
