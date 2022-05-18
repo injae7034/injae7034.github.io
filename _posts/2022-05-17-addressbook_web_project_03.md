@@ -553,6 +553,8 @@ BindingResult의 객체를 통해 에러가 발생하면 개인 정보를 저장
 
 이 후에 문자열 redirect:/를 반환하여 홈화면으로 다시 돌아가도록 합니다.  
 
+이제 홈화면에는 새로 추가된 개인의 정보가 반영되어 출력됩니다.  
+
 ## recordPersonalForm.html
 ```html
 <!DOCTYPE HTML>
@@ -839,13 +841,13 @@ th:if 에서 personals가 null인 경우 출력을 하지 않도록 하고 있�
 
 그리고 찾기 화면에서도 홈화면과 마찬가지로 찾은 개인들의 정보를 수정하거나 지울 수 있도록 하였습니다.  
 
-## findPersonalForm의.html 기본 화면
+## findPersonalForm.html 기본 화면
 ![찾기화면](../../images/2022-05-17-addressbook_web_project_03/찾기_기본_화면.JPG)
 
-## recordPersonalForm.html 공백 예외 화면
+## findPersonalForm.html 공백 예외 화면
 ![찾기공백예외화면](../../images/2022-05-17-addressbook_web_project_03/찾기_예외_화면.JPG)
 
-## recordPersonalForm.html 이름으로 찾은 화면
+## findPersonalForm.html 이름으로 찾은 화면
 ![찾은화면](../../images/2022-05-17-addressbook_web_project_03/찾은_화면.JPG)
 
 # correct 패키지
@@ -892,3 +894,180 @@ CorrectPersonalForm에는 다른 웹계층 입력 모델과는 다르게 Persona
 
 그리고 이 Personal 객체의 정보를 나중에 데이터베이스에서 데이터 수정에 사용합니다.  
 
+## CorrectPersonalController 클래스
+```java
+package injae.AddressBook.personal.adapter.in.web.correct;
+
+import injae.AddressBook.personal.application.port.in.correct.CorrectPersonalCommand;
+import injae.AddressBook.personal.application.port.in.correct.CorrectPersonalUseCase;
+import injae.AddressBook.personal.application.port.in.get.GetPersonalCommand;
+import injae.AddressBook.personal.application.port.in.get.GetPersonalQuery;
+import injae.AddressBook.personal.domain.Personal;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+
+import javax.validation.Valid;
+
+@Controller
+@RequiredArgsConstructor
+public class CorrectPersonalController {
+
+    private final GetPersonalQuery query;
+    private final CorrectPersonalUseCase useCase;
+
+    @GetMapping("/correct/{id}")
+    public String createForm(@PathVariable("id") Long id, Model model) {
+        Personal personal = query.getPersonal(new GetPersonalCommand(id));
+
+        model.addAttribute("correctPersonalForm",
+                new CorrectPersonalForm(
+                        personal.getId(),
+                        personal.getName(),
+                        personal.getAddress(),
+                        personal.getTelephoneNumber(),
+                        personal.getEmailAddress()));
+
+        return "correctPersonalForm";
+    }
+
+    @PostMapping("/correct/{id}")
+    public String correctPersonal(@Valid CorrectPersonalForm correctPersonalForm,
+                                  BindingResult result) {
+
+        if (result.hasErrors()) {
+            return "correctPersonalForm";
+        }
+
+        CorrectPersonalCommand command = new CorrectPersonalCommand(
+                correctPersonalForm.getId(),
+                correctPersonalForm.getName(),
+                correctPersonalForm.getAddress(),
+                correctPersonalForm.getTelephoneNumber(),
+                correctPersonalForm.getEmailAddress());
+
+        useCase.correctPersonal(command);
+
+        return "redirect:/";
+    }
+}
+```
+
+CorrectPersonalController 클래스는 필드멤버로 GetPersonalQuery와 CorrectPersonalUseCase를 가지는데 GetPersonalQuery는 수정할 개인 정보를 구하기 위해 사용되고, CorrectPersonalUseCase는 찾은 개인 정보를 수정하기위해 사용됩니다.  
+
+### createForm 메서드
+홈화면(home.html)또는 찾기화면(findPersonalForm.html)에서 개인 정보 옆에 있는 수정 버튼을 클릭했을 떄 경로를 /correct/{id}로 이동하도록 하였고, http메서드 지정은 없었기 때문에 Get으로 인식됩니다.  
+
+그러면 GetMapping 애너테이션으로 인해 createForm 메서드가 실행됩니다.  
+
+이 때 경로인 correct/{id}에 개인의 id 정보가 같이 전달됩니다.  
+
+이 id 정보를 바탕으로 메서드 내부에서 GetPersonalQuery의 query 메서드에 전달하여 id에 해당하는 개인의 정보를 얻어 Personal 객체에 저장합니다.  
+
+이 Personal 객체를 모든 정보(모든 필드)를 활용하여 CorrectPersonalForm 객체를 생성합니다.  
+
+CorrectPersonalForm 객체는 id를 바탕으로 데이터베이스에서 찾은 개인의 모든 정보를 담고 있습니다.  
+
+CorrectPersonalForm 객체의 정보를 문자열 correctPersonalForm에 매핑하여 Model으 addAttribute를 통해 웹화면으로 개인의 데이터를 전달합니다.  
+
+(수정하기 화면이 페이지에 뜰 때, 이 전달받은 개인 정보를 화면에 출력해줍니다.  
+
+사용자는 이 개인 정보에서 아이디와 이름은 수정할 수 없고, 주소, 전화번호, 이메일주소만 변경할 수 있습니다.)  
+
+그리고 문자열 correctPersonalForm 반환하는데 그러면 스프링에서 resources 패키지에 있는 templetes의 패키지 아래에 있는 correctPersonalForm.html로 연결시켜줍니다.  
+
+### correctPersonal 메서드
+correctPersonalForm.html 화면에서 수정하기 버튼을 클릭했을 때 경로는 그대로이고, http 메서드의 post가 호출되기 때문에 PostMapping이 붙은 correctPersonal 연결됩니다.  
+
+BindingResult의 객체를 통해 에러가 발생하면 개인 정보를 저장하지 않고, 다시 correctPersonalForm.html 화면으로 돌아가도록 하였습니다.  
+
+예외가 없다면 correctPersonalForm.html에서 사용자가 입력한 변경된 정보(주소, 전화번호, 이메일주소)를 저장하고 있는 CorrectPersonalForm 객체를 이용하여 CorrectPersonalCommand의 생성자를 호출합니다.  
+
+그리고 이를 UseCase의 correctPersonal 메서드에 전달하면 서비스 계층을 거쳐서 영속성 계층까지 가게 되고 개인 정보가 성공적으로 데이터베이스에 변경되게 됩니다.  
+
+이 후에 문자열 redirect:/를 반환하여 홈화면으로 다시 돌아가도록 합니다.  
+
+이제 홈화면으로 돌아가면 id에 해당하는 개인의 정보가 바뀌어서 출력되어 있을 것입니다.  
+
+## correctPersonalForm.html
+```html
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header" />
+<body>
+<div class="container">
+    <div th:replace="fragments/bodyHeader :: bodyHeader"/>
+    <form role="form" th:object="${correctPersonalForm}"
+          method="post">
+        <!-- id -->
+        <input type="hidden" th:field="*{id}" />
+        <div class="form-group">
+            <h4 th:for="name">이름: <span th:text="*{name}">message</span> </h4>
+            <input type="hidden" th:field="*{name}" />
+        </div>
+        <div class="form-group">
+            <label th:for="address">주소</label>
+            <input type="text" th:field="*{address}" class="form-control"
+                   placeholder="주소를 입력하세요"
+                   th:class="${#fields.hasErrors('address')}? 'form-control
+fieldError' : 'form-control'">
+            <p th:if="${#fields.hasErrors('address')}"
+               th:errors="*{address}">Incorrect date</p>
+        </div>
+        <div class="form-group">
+            <label th:for="telephoneNumber">전화번호</label>
+            <input type="text" th:field="*{telephoneNumber}" class="form-control"
+                   placeholder="전화번호를 입력하세요"
+                   th:class="${#fields.hasErrors('telephoneNumber')}? 'form-control
+fieldError' : 'form-control'">
+            <p th:if="${#fields.hasErrors('telephoneNumber')}"
+               th:errors="*{telephoneNumber}">Incorrect date</p>
+        </div>
+        <div class="form-group">
+            <label th:for="emailAddress">이메일주소</label>
+            <input type="text" th:field="*{emailAddress}" class="form-control"
+                   placeholder="이메일을 입력하세요"
+                   th:class="${#fields.hasErrors('emailAddress')}? 'form-control
+fieldError' : 'form-control'">
+            <p th:if="${#fields.hasErrors('emailAddress')}"
+               th:errors="*{emailAddress}">Incorrect date</p>
+        </div>
+        <br>
+        <button type="submit" class="btn btn-primary">수정하기</button>
+        &nbsp;&nbsp;
+        <a href="/"class="btn btn-info">돌아가기</a>
+    </form>
+    <div th:replace="fragments/footer :: footer" />
+</div> <!-- /container -->
+</body>
+</html>
+```
+createForm에서 전달받은 correctPersonalForm을 th:object에 저장하는데, 이 때 correctPersonalForm은 id를 통해 찾은 개인의 정보를 가지고 있습니다.  
+
+input에 hidden을 통해 id와 name의 정보를 가지고 있되 웹화면에는 보이지 않게 합니다.  
+
+(이 과정을 거치지 않으면 나중에 수정하기 버튼을 클릭했을 때 correctPersonalForm이 correctPersonal 메서드로 전달될 때 id와 name의 값은 null이 되기 때문에 이를 막기 위해서 필요합니다.)
+
+주소, 전화번호, 이메일 주소의 input창에 correctPersonalForm의 정보를 바탕으로 개인 정보를 출력합니다.  
+
+이로써 사용자는 주소, 전화번호, 이메일 주소 중에 자신이 원하는 정보만 취사하여 바꾸면 됩니다.  
+
+correctPersonalForm에는 id와 name은 그대로이고, 사용자의 선택에 따라 address, telephoneNumber, emailAddress가 변경되어 저장됩니다.  
+
+그리고 사용자가 수정하기 버튼을 클릭하면 correctPersonalForm에는 변경된 정보와 함께 correctPersonal 메서드로 전달됩니다.  
+
+
+## correctPersonalForm.html 기본 화면
+![수정하기화면](../../images/2022-05-17-addressbook_web_project_03/수정하기_기본_화면.JPG)
+
+## correctPersonalForm.html 공백 예외 화면
+![수정하기공백예외화면](../../images/2022-05-17-addressbook_web_project_03/수정하기_예외_화면_1.JPG)
+
+## correctPersonalForm.html 이메일 형식 예외 화면
+![수정하기이메일형식예외화면](../../images/2022-05-17-addressbook_web_project_03/수정하기_예외_화면_2.JPG)
+
+# erase 패키지 
