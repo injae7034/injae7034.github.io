@@ -447,3 +447,39 @@ function erase(id){
 
 ## home.html 화면
 ![calculate결과](../../images/2022-05-17-addressbook_web_project_03/홈화면.JPG)
+
+# record 패키지
+record 패키지 아래에는 RecordPersonalForm과 RecordPersonalForm 클래스가 있습니다.  
+
+## RecordPersonalForm 클래스
+
+```java
+package injae.AddressBook.personal.adapter.in.web.record;
+
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+
+@Getter @Setter
+public class RecordPersonalForm {
+
+    @NotEmpty(message = "이름은 필수입니다.")
+    private String name;
+    @NotEmpty(message = "주소는 필수입니다.")
+    private String address;
+    @NotEmpty(message = "전화번호는 필수입니다.")
+    private String telephoneNumber;
+    @Email(message = "이메일 형식을 지켜주세요.")
+    private String emailAddress;
+
+}
+```
+
+RecordPersonalForm 클래스는 유스케이스의 입력 유효성을 검증하는 모델인 RecordPersonalCommand와는 별개로 웹 어댑터의 입력 모델, 즉, 웹 계층에서 입력 유효성을 검증하는 역할을 합니다.  
+
+클라이언트가 웹 화면, 뷰에서 기재할 개인 정보(이름, 주소, 전화번호, 이메일)를 입력하면 RecordPersonalForm 클래스는 입력된 정보에 대한 유효성을 검증하는데 이 떄 이름, 주소, 전화번호는 비어있을 경우 그리고 이메일의 경우 비어있는 것은 상관없지만 이메일의 형식을 지키지 않을 경우 예외 메세지를 출력하여 개인 정보를 저장할 수 없도록 막았습니다.  
+
+이것이 웹 계층에서 입력 모델에 대한 유효성을 검증하는 방법이고, 자연스럽게 이 과정에서 웹 계층에서 클라이언트가 입력한 정보를 유스케이스로 전달하는, 즉, 데이터 전달 역할도 합니다.  
+
