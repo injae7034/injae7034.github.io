@@ -481,6 +481,8 @@ RecordPersonalForm 클래스는 유스케이스의 입력 유효성을 검증하
 
 클라이언트가 웹 화면, 뷰에서 기재할 개인 정보(이름, 주소, 전화번호, 이메일)를 입력하면 RecordPersonalForm 클래스는 입력된 정보에 대한 유효성을 검증하는데 이 떄 이름, 주소, 전화번호는 비어있을 경우 그리고 이메일의 경우 비어있는 것은 상관없지만 이메일의 형식을 지키지 않을 경우 예외 메세지를 출력하여 개인 정보를 저장할 수 없도록 막았습니다.  
 
+롬복의 Getter와 Setter를 붙인 이유는 웹계층에서 클라이언트가 입력한 데이터를 RecordPersonalForm 객체에 저장(set)하거나 RecordPersonalForm 객체가 가지고 있는 정보를 구해서(get) 웹 계층에 출력할 때를 위해서 Getter와 Setter를 정의해야 하기 때문입니다.  
+
 이것이 웹 계층에서 입력 모델에 대한 유효성을 검증하는 방법이고, 자연스럽게 이 과정에서 웹 계층에서 클라이언트가 입력한 정보를 유스케이스로 전달하는, 즉, 데이터 전달 역할도 합니다.  
 
 ## RecordPersonalController 클래스
@@ -635,4 +637,214 @@ th:object에 아까 createForm에서 전달한 recordPersonalForm을 저장합�
 
 ## recordPersonalForm.html 이메일 형식 예외 화면
 ![기재하기이메일형식예외화면](../../images/2022-05-17-addressbook_web_project_03/기재하기_예외_화면_2.JPG)
+
+# find 패키지
+find 패키지에는 FindPersonalForm과 FindPersonalController 클래스가 있습니다.  
+
+## FindPersonalForm 클래스
+```java
+package injae.AddressBook.personal.adapter.in.web.find;
+
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.validation.constraints.NotEmpty;
+
+@Getter @Setter
+public class FindPersonalForm {
+
+    @NotEmpty(message = "이름은 필수입니다.")
+    private String name;
+
+}
+```
+
+RecordPersonalForm 클래스와 설명이 동일하기 때문에 RecordPersonalForm 클래스 설명을 참고하면 됩니다.  
+
+## FindPersonalController 클래스
+```java
+package injae.AddressBook.personal.adapter.in.web.find;
+
+import injae.AddressBook.personal.application.port.in.find.FindPersonalCommand;
+import injae.AddressBook.personal.application.port.in.find.FindPersonalUseCase;
+import injae.AddressBook.personal.domain.Personal;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import javax.validation.Valid;
+import java.util.List;
+
+@Controller
+@RequiredArgsConstructor
+public class FindPersonalController {
+
+    private final FindPersonalUseCase useCase;
+
+    private List<Personal> personals;
+
+    @GetMapping("/find")
+    public String createForm(Model model) {
+        model.addAttribute("findPersonalForm", new FindPersonalForm());
+
+        if(personals == null) {
+            model.addAttribute("personals", null);
+        } else {
+            model.addAttribute("personals", personals);
+        }
+
+        personals = null;
+
+        return "findPersonalForm";
+    }
+
+    @PostMapping("/find")
+    public String findPersonal(@Valid FindPersonalForm form,
+                               BindingResult result) {
+
+        if (result.hasErrors()) {
+            return "findPersonalForm";
+        }
+
+        personals = useCase.findPersonalByName(
+                new FindPersonalCommand(form.getName())
+        );
+
+        return "redirect:/find";
+    }
+
+}
+```
+FindPersonalUseCase의 객체와 이름으로 찾은(동명이인이 있을 수 있기 때문에 이름으로 찾으면 개인이 여러명이 있을 수도 있음)개인을 저장할 List\<Personal\>를 멤버로 저장합니다.  
+
+### createForm 메서드
+홈화면(home.html)에서 이름으로 찾기 버튼을 클릭했을 떄 경로를 /find로 이동하도록 하였고, http메서드 지정은 없었기 때문에 Get으로 인식됩니다.  
+
+그러면 GetMapping 애너테이션으로 인해 createForm 메서드가 실행됩니다.  
+
+메서드 내부에서 Model 객체의 addAttribute를 호출하여 웹 계층 데이터 전달 및 유효성 검증을 하는 FindPersonalForm의 객체를 새로 생성하여 findPersonalForm으로 매핑하여 웹 화면으로 보냅니다.  
+
+이 때 당연히 FindPersonalController 멤버인 List\<Personal\>은 null이기 때문에 웹화면에서 사용할 personals에 null을 저장하여 보내줍니다.  
+
+나중에 이름으로 찾은 개인들이 있으면 List\<Personal\>은 더이상 null이 아니기 때문에 웹화면에서 사용할 personals에 List\<Personal\>객체 정보를 넘겨주면 찾기 화면에서 이 정보를 바탕으로 하여 이름으로 찾은 개인들의 정보를 찾기 화면에 출력할 것입니다.  
+
+그리고 List\<Personal\>의 정보를 다시 null로 초기화해줍니다.  
+
+(그렇게 하지 않으면 다른 화면으로 갔다가 다시 찾기 화면으로 왔을 때 아까 찾은 이름의 목록이 그대로 다시 출력되기 때문입니다.  
+
+웹 상에서 해결할 수 있는 방법이 분명히 있을 거 같은데 이 것을 해결하지 못해서 부득이하게 FindPersonalController의 멤버에 List\<Personal\>를 두고 이를 활용하여 웹화면에 데이터를 출력하도록 하였습니다.)  
+
+그리고 문자열 findPersonalForm을 반환하는데 그러면 스프링에서 resources 패키지에 있는 templetes의 패키지 아래에 있는 findPersonalForm.html로 연결시켜줍니다.  
+
+### findPersonal 메서드
+findPersonalForm.html 화면에서 찾기 버튼을 클릭했을 때 경로는 그대로이고, http 메서드의 post가 호출되기 때문에 PostMapping이 붙은 findPersonal로 연결됩니다.  
+
+BindingResult의 객체를 통해 에러가 발생하면 이름으로 개인 정보를 찾지 않고, 다시 findPersonalForm.html 화면으로 돌아가도록 하였습니다.  
+
+예외가 없다면 findPersonalForm.html에서 사용자가 입력한 이름을 저장하고 있는 FindPersonalForm의 객체를 이용하여 FindPersonalCommand의 생성자를 호출합니다.  
+
+그리고 이를 UseCase의 findPersonal 메서드에 전달하면 서비스 계층을 거쳐서 영속성 계층까지 가게 되고 이름이 일치하는 개인들의 정보를 성공적으로 데이터베이스에서 가져와서 FindPersonalController의 멤버인 List\<Personal\>에 저장하게 됩니다.  
+
+이 후에 문자열 redirect:/find를 반환하여 찾기화면으로 다시 돌아가도록 합니다.  
+
+홈화면에서 이름으로 찾기 버튼을 클릭했을 때는 즉, 처음 찾기 화면이 시작될 때는 List\<Personal\>가 null이었기 때문에 어떠한 개인의 정보도 출력되지 않았습니다.  
+
+찾기 버튼을 클릭한 후에는(물론 일치하는 이름이 없다면  List\<Personal\>가 null이기 때문에 그대로 아무것도 출력되지 않음) 이름으로 찾은 개인의 정보들이 찾기 화면에 출력됩니다.  
+
+## findPersonalForm.html
+```html
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header"/>
+<body>
+<div class="container">
+    <div th:replace="fragments/bodyHeader :: bodyHeader"/>
+    <div>
+        <div>
+            <form role="form" action="/find"
+                  th:object="${findPersonalForm}" method="post">
+                <div class="form-group">
+                    <label th:for="name">이름</label>
+                    <input type="text" th:field="*{name}" class="form-control"
+                           placeholder="이름을 입력하세요"
+                           th:class="${#fields.hasErrors('name')}? 'form-control
+fieldError' : 'form-control'">
+                    <p th:if="${#fields.hasErrors('name')}"
+                       th:errors="*{name}">Incorrect date</p>
+                </div>
+                <br>
+                <button type="submit" class="btn btn-primary">찾기</button>
+                &nbsp;&nbsp;
+                <a href="/"class="btn btn-info">돌아가기</a>
+                <br>
+            </form>
+        </div>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+<!--                <th>id</th>-->
+                <th>이름</th>
+                <th>주소</th>
+                <th>전화번호</th>
+                <th>이메일주소</th>
+            </tr>
+            </thead>
+            <tbody th:if="${personals != null}">
+            <tr th:each="personal : ${personals}">
+<!--                <td th:text="${personal.id}"></td>-->
+                <td th:text="${personal.name}"></td>
+                <td th:text="${personal.address}"></td>
+                <td th:text="${personal.telephoneNumber}"></td>
+                <td th:text="${personal.emailAddress}"></td>
+                <td>
+                    <a href="#" th:href="@{/correct/{id} (id=${personal.id})}"
+                       class="btn btn-primary" role="button">수정</a>
+                </td>
+                <td>
+                    <a href="#" th:href="'javascript:erase('+${personal.id}+')'"
+                       class="btn btn-danger" role="button">지우기</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div th:replace="fragments/footer :: footer"/>
+</div> <!-- /container -->
+</body>
+<script>
+function erase(id){
+    if (confirm("정말 삭제하시겠습니까??") == true){    //확인
+        var form = document.createElement("form");
+        form.setAttribute("method", "get");
+        form.setAttribute("action", "/erase/" + id);
+        document.body.appendChild(form);
+        form.submit();
+    }else{   //취소
+        return;
+    }
+}
+</script>
+</html>
+```
+
+th:object에 createForm에서 전달받은 findPersonalForm을 저장하고, input 창을 통해 name을 입렫 받아 findPersonalForm의 멤버인 name에 저장합니다.  
+
+사용자가 찾기 버튼을 클릭했을 때 findPersonalForm은 이 name 정보를 가지고 findPersonal로 전달됩니다.  
+
+찾기 버튼을 클릭하면 post 메서드가 호출되기 때문에 PostMapping이 붙은 findPersonal로 이동합니다.  
+
+th:if 에서 personals가 null인 경우 출력을 하지 않도록 하고 있고 personals가 null이 아니면 여기에 개인들의 정보가 저장되어 있기 때문에 이를 출력하도록 하였습니다.  
+
+그리고 찾기 화면에서도 홈화면과 마찬가지로 찾은 개인들의 정보를 수정하거나 지울 수 있도록 하였습니다.  
+
+## findPersonalForm의.html 기본 화면
+![찾기화면](../../images/2022-05-17-addressbook_web_project_03/찾기_기본_화면.JPG)
+
+## recordPersonalForm.html 공백 예외 화면
+![찾기공백예외화면](../../images/2022-05-17-addressbook_web_project_03/찾기_예외_화면.JPG)
+
+## recordPersonalForm.html 이름으로 찾은 화면
+![찾은화면](../../images/2022-05-17-addressbook_web_project_03/찾은_화면.JPG)
 
