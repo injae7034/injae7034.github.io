@@ -1113,7 +1113,13 @@ ErasePersonalController 클래스는 지우기만 하면 되기 때문에 별도
 
 그래서 createForm 메서드는 별도로 없고, erasePersonal 메서드만 존재합니다.  
 
-### erasePersonal 메서드
+### 지우기 버튼을 클릭했을 때 뜨는 팝업창
+
+![지우기팝업창1](../../images/2022-05-17-addressbook_web_project_03/지우기_팝업창_1.JPG)
+
+![지우기팝업창2](../../images/2022-05-17-addressbook_web_project_03/지우기_팝업창_2.JPG)
+
+### 자바스크립트 erase 메서드
 ```javascript
 function erase(id){
     if (confirm("정말 삭제하시겠습니까??") == true){    //확인
@@ -1127,6 +1133,7 @@ function erase(id){
     }
 ```
 
+### erasePersonal 메서드
 home.html 또는 findPersonalForm.html 화면에서 지우기 버튼을 클릭했을 때 팝업창이 뜨도록 설정했습니다.  
 
 이제 이 팝업창("정말 지우시겠습니까?")에서 취소버튼을 누르면 다시 home.html 또는 findPersonalForm.html 화면으로 돌아가고, 확인버튼을 누르면 자바스크립트 함수를 호출하는데 자바스크립트 함수에서 경로를 "/erase/{id}"로 http메서드는 get으로 하도록 설정합니다.  
