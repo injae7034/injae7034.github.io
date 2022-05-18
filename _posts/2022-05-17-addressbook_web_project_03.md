@@ -1113,9 +1113,11 @@ ErasePersonalController 클래스는 지우기만 하면 되기 때문에 별도
 
 그래서 createForm 메서드는 별도로 없고, erasePersonal 메서드만 존재합니다.  
 
-### 지우기 버튼을 클릭했을 때 뜨는 팝업창
+### 홈화면에서 지우기 버튼을 클릭했을 때 뜨는 팝업창
 
 ![지우기팝업창1](../../images/2022-05-17-addressbook_web_project_03/지우기_팝업창_1.JPG)
+
+### 찾기화면에서 지우기 버튼을 클릭했을 때 뜨는 팝업창
 
 ![지우기팝업창2](../../images/2022-05-17-addressbook_web_project_03/지우기_팝업창_2.JPG)
 
