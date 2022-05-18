@@ -848,3 +848,47 @@ th:if 에서 personals가 null인 경우 출력을 하지 않도록 하고 있�
 ## recordPersonalForm.html 이름으로 찾은 화면
 ![찾은화면](../../images/2022-05-17-addressbook_web_project_03/찾은_화면.JPG)
 
+# correct 패키지
+correct 패키지에는 CorrectPersonalForm, CorrectPersonalController 클래스가 있습니다.  
+
+## CorrectPersonalForm 클래스
+```java
+package injae.AddressBook.personal.adapter.in.web.correct;
+
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+
+@Getter @Setter
+public class CorrectPersonalForm {
+
+    private Long id;
+    private String name;
+
+    @NotEmpty(message = "주소는 필수입니다.")
+    private String address;
+    @NotEmpty(message = "전화번호는 필수입니다.")
+    private String telephoneNumber;
+    @Email(message = "이메일 형식을 지켜주세요.")
+    private String emailAddress;
+
+    public CorrectPersonalForm(Long id, String name, String address,
+                               String telephoneNumber, String emailAddress) {
+        this.id = id;
+        this.name = name;
+        this.address = address;
+        this.telephoneNumber = telephoneNumber;
+        this.emailAddress = emailAddress;
+    }
+
+}
+```
+
+CorrectPersonalForm에는 다른 웹계층 입력 모델과는 다르게 Personal처럼 5가지 필드(id, name, address, telephoneNumber, emailAddress)를 가지고 있고 5가지 필드멤버를 초기화하는 생성자도 가지고 있습니다.  
+
+그 이유는 CorrectPersonalForm의 객체에 저장된 정보를 바탕으로 Personal 객체를 생성하기 때문입니다.  
+
+그리고 이 Personal 객체의 정보를 나중에 데이터베이스에서 데이터 수정에 사용합니다.  
+
