@@ -836,4 +836,4 @@ repository의 delete메소드를 호출하고 데이터베이스에서 입력 �
 
 # 글을 마치며
 이로써 personal 패키지 아래의 3개 패키지(adapter, application, domain) 중에서 application 패키지에 대한 설명을 마치도록 하겠습니다.  
-다음 글에서 <a href="https://injae7034.github.io/java/addressbook_web_project_02/" target="_blank">adapter</a>에 대한 설명을 하도록 하겠습니다.  
+다음 글에서 <a href="https://injae7034.github.io/java/addressbook_web_project_03/" target="_blank">adapter</a>에 대한 설명을 하도록 하겠습니다.  
