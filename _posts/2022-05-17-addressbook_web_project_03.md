@@ -957,7 +957,7 @@ public class CorrectPersonalController {
 }
 ```
 
-CorrectPersonalController 클래스는 필드멤버로 GetPersonalQuery와 CorrectPersonalUseCase를 가지는데 GetPersonalQuery는 수정할 개인 정보를 구하기 위해 사용되고, CorrectPersonalUseCase는 찾은 개인 정보를 수정하기위해 사용됩니다.  
+CorrectPersonalController 클래스는 필드멤버로 GetPersonalQuery와 CorrectPersonalUseCase를 가지는데 GetPersonalQuery는 수정할 개인 정보를 구하기 위해 사용되고, CorrectPersonalUseCase는 찾은 개인 정보를 데이터베이스에서 수정하기위해 사용됩니다.  
 
 ### createForm 메서드
 홈화면(home.html)또는 찾기화면(findPersonalForm.html)에서 개인 정보 옆에 있는 수정 버튼을 클릭했을 떄 경로를 /correct/{id}로 이동하도록 하였고, http메서드 지정은 없었기 때문에 Get으로 인식됩니다.  
@@ -1070,4 +1070,82 @@ correctPersonalForm에는 id와 name은 그대로이고, 사용자의 선택에 
 ## correctPersonalForm.html 이메일 형식 예외 화면
 ![수정하기이메일형식예외화면](../../images/2022-05-17-addressbook_web_project_03/수정하기_예외_화면_2.JPG)
 
-# erase 패키지 
+# erase 패키지
+erase 패키지에는 ErasePersonalController 클래스가 하나 있습니다.  
+
+## ErasePersonalController 클래스
+```java
+package injae.AddressBook.personal.adapter.in.web.erase;
+
+import injae.AddressBook.personal.application.port.in.erase.ErasePersonalUseCase;
+import injae.AddressBook.personal.application.port.in.get.GetPersonalCommand;
+import injae.AddressBook.personal.application.port.in.get.GetPersonalQuery;
+import injae.AddressBook.personal.domain.Personal;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+@Controller
+@RequiredArgsConstructor
+public class ErasePersonalController {
+
+    private final GetPersonalQuery query;
+    private final ErasePersonalUseCase useCase;
+
+    @GetMapping("/erase/{id}")
+    public String erasePersonal(@PathVariable("id") Long id) {
+        Personal personal = query.getPersonal(new GetPersonalCommand(id));
+
+        useCase.erasePersonal(personal);
+
+        return "redirect:/";
+    }
+
+}
+```
+
+ErasePersonalController 클래스는 필드멤버로 GetPersonalQuery와 ErasePersonalUseCase를 가지는데 GetPersonalQuery는 지울 개인 정보를 구하기 위해 사용되고, ErasePersonalUseCase는 찾은 개인 정보를 데이터베이스에서 지우기 위해 사용됩니다.  
+
+ErasePersonalController 클래스는 지우기만 하면 되기 때문에 별도위 지우기 화면은 없습니다.  
+
+대신 지우기 버튼을 클릭하면 팝업창을 띄어서 지우기 전에 다시 한번 정말 개인 정보를 지울 것인지 확인합니다.  
+
+그래서 createForm 메서드는 별도로 없고, erasePersonal 메서드만 존재합니다.  
+
+### erasePersonal 메서드
+```javascript
+function erase(id){
+    if (confirm("정말 삭제하시겠습니까??") == true){    //확인
+        var form = document.createElement("form");
+        form.setAttribute("method", "get");
+        form.setAttribute("action", "/erase/" + id);
+        document.body.appendChild(form);
+        form.submit();
+    }else{   //취소
+        return;
+    }
+```
+
+home.html 또는 findPersonalForm.html 화면에서 지우기 버튼을 클릭했을 때 팝업창이 뜨도록 설정했습니다.  
+
+이제 이 팝업창("정말 지우시겠습니까?")에서 취소버튼을 누르면 다시 home.html 또는 findPersonalForm.html 화면으로 돌아가고, 확인버튼을 누르면 자바스크립트 함수를 호출하는데 자바스크립트 함수에서 경로를 "/erase/{id}"로 http메서드는 get으로 하도록 설정합니다.  
+
+그러면 erasePersonal 메서드가 호출되는데 이 때 경로를 통해 지울 개인에 해당하는 id를 전달받습니다.  
+
+메서드 내부에서 GetPersonalQuery의 getPersonal메소드에 id를 전달해 지울 개인의 정보를 구해 Personal 객체에 저장합니다.  
+
+이 Personal 객체의 정보를 ErasePersonalUseCase의 erasePersonal메소드에 전달하여 서비스 계층을 거쳐서 영속성 계층까지 가서 해당 개인의 정보를 성공적으로 데이터베이스에서 지우게 됩니다.  
+
+이 후에 문자열 redirect:/를 반환하여 홈화면으로 다시 돌아가도록 합니다.  
+
+이제 홈화면으로 돌아가면 id에 해당하는 개인의 정보가 바뀌 삭제되어 있을 것입니다.  
+
+# 마치며
+이로써 헥사고날-아키텍쳐로-구현하는-작은-스프링-부트-토이-프로젝트-주소록을 마치게 되었습니다.  
+
+이 프로젝트를 통해 강의를 보면서 다 이해했다고 생각했던 부분이 사실은 그렇지 않았음을 알게 되어 다시 한번 공부할 수 있었고, 책에서 나오는 내용을 직접 적용해보니 책 내용을 더 잘 이해할 수 있었습니다.  
+
+앞으로도 input만 하지 않고, input을 했으면 꼭 output의 일환으로 작은 토이 프로젝트를 구현해보려고 합니다.  
+
+지금까지 긴 글을 읽어주셔서 감사하며, 틀린 내용이나 질문사항은 언제든지 남겨 주시면 확인 후에 답변드리도록 하겠습니다^^
