@@ -446,7 +446,7 @@ function erase(id){
 또한 수정버튼과 지우기 버튼은 각 개인의 출력된 데이터 옆에 각각 위치하도록 설정하였는데 수정버튼을 누르면 수정하기 화면으로 이동하고, 지우기 버튼을 누를 경우 아래 자바스크립의 함수를 호출하여 팝업창이 뜨도록 하였습니다.  
 
 ## home.html 화면
-![calculate결과](../../images/2022-05-17-addressbook_web_project_03/홈화면.JPG)
+![홈화면](../../images/2022-05-17-addressbook_web_project_03/홈화면.JPG)
 
 # record 패키지
 record 패키지 아래에는 RecordPersonalForm과 RecordPersonalForm 클래스가 있습니다.  
@@ -482,4 +482,157 @@ RecordPersonalForm 클래스는 유스케이스의 입력 유효성을 검증하
 클라이언트가 웹 화면, 뷰에서 기재할 개인 정보(이름, 주소, 전화번호, 이메일)를 입력하면 RecordPersonalForm 클래스는 입력된 정보에 대한 유효성을 검증하는데 이 떄 이름, 주소, 전화번호는 비어있을 경우 그리고 이메일의 경우 비어있는 것은 상관없지만 이메일의 형식을 지키지 않을 경우 예외 메세지를 출력하여 개인 정보를 저장할 수 없도록 막았습니다.  
 
 이것이 웹 계층에서 입력 모델에 대한 유효성을 검증하는 방법이고, 자연스럽게 이 과정에서 웹 계층에서 클라이언트가 입력한 정보를 유스케이스로 전달하는, 즉, 데이터 전달 역할도 합니다.  
+
+## RecordPersonalController 클래스
+```java
+package injae.AddressBook.personal.adapter.in.web.record;
+
+import injae.AddressBook.personal.application.port.in.record.RecordPersonalCommand;
+import injae.AddressBook.personal.application.port.in.record.RecordPersonalUseCase;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+
+import javax.validation.Valid;
+
+@Controller
+@RequiredArgsConstructor
+public class RecordPersonalController {
+
+    private final RecordPersonalUseCase useCase;
+
+    @GetMapping("/record")
+    public String createForm(Model model) {
+        model.addAttribute("recordPersonalForm", new RecordPersonalForm());
+        return "recordPersonalForm";
+    }
+
+    @PostMapping("/record")
+    public String recordPersonal(@Valid RecordPersonalForm form, BindingResult result) {
+
+        if (result.hasErrors()) {
+            return "recordPersonalForm";
+        }
+
+        RecordPersonalCommand command = new RecordPersonalCommand(
+                form.getName(),
+                form.getAddress(),
+                form.getTelephoneNumber(),
+                form.getEmailAddress()
+        );
+
+        useCase.recordPersonal(command);
+
+        return "redirect:/";
+    }
+}
+```
+
+### createForm 메서드
+홈화면(home.html)에서 기재하기 버튼을 클릭했을 떄 경로를 /record로 이동하도록 하였고, http메서드 지정은 없었기 때문에 Get으로 인식됩니다.  
+
+그러면 GetMapping 애너테이션으로 인해 createForm 메서드가 실행됩니다.  
+
+메서드 내부에서 Model 객체의 addAttribute를 호출하여 웹 계층 데이터 전달 및 유효성 검증을 하는 RecordPersonalForm의 객체를 새로 생성하여 recordPersonalForm으로 매핑하여 웹 화면으로 보냅니다.  
+
+그리고 문자열 recordPersonalForm을 반환하는데 그러면 스프링에서 resources 패키지에 있는 templetes의 패키지 아래에 있는 recordPersonalForm.html로 연결시켜줍니다.  
+
+### recordPersonal 메서드
+recordPersonalForm.html 화면에서 기재하기 버튼을 클릭했을 때 경로는 그대로이고, http 메서드의 post가 호출되기 때문에 PostMapping이 붙은 recordPersonal로 연결됩니다.  
+
+BindingResult의 객체를 통해 에러가 발생하면 개인 정보를 저장하지 않고, 다시 recordPersonalForm.html 화면으로 돌아가도록 하였습니다.  
+
+예외가 없다면 recordPersonalForm.html에서 사용자가 입력한 정보를 저장하고 있는 RecordPersonalForm의 객체를 이용하여 RecordPersonalCommand의 생성자를 호출합니다.  
+
+그리고 이를 UseCase의 recordPersonal 메서드에 전달하면 서비스 계층을 거쳐서 영속성 계층까지 가게 되고 개인 정보가 성공적으로 데이터베이스에 저장되게 됩니다.  
+
+이 후에 문자열 redirect:/를 반환하여 홈화면으로 다시 돌아가도록 합니다.  
+
+## recordPersonalForm.html
+```html
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header" />
+<style>
+ .fieldError {
+ border-color: #bd2130;
+ }
+</style>
+<body>
+<div class="container">
+    <div th:replace="fragments/bodyHeader :: bodyHeader"/>
+    <form role="form" action="/record" th:object="${recordPersonalForm}"
+          method="post">
+        <div class="form-group">
+            <label th:for="name">이름</label>
+            <input type="text" th:field="*{name}" class="form-control"
+                   placeholder="이름을 입력하세요"
+                   th:class="${#fields.hasErrors('name')}? 'form-control
+fieldError' : 'form-control'">
+            <p th:if="${#fields.hasErrors('name')}"
+               th:errors="*{name}">Incorrect date</p>
+        </div>
+        <div class="form-group">
+            <label th:for="address">주소</label>
+            <input type="text" th:field="*{address}" class="form-control"
+                   placeholder="주소를 입력하세요"
+                   th:class="${#fields.hasErrors('address')}? 'form-control
+fieldError' : 'form-control'">
+            <p th:if="${#fields.hasErrors('address')}"
+               th:errors="*{address}">Incorrect date</p>
+        </div>
+        <div class="form-group">
+            <label th:for="telephoneNumber">전화번호</label>
+            <input type="text" th:field="*{telephoneNumber}" class="form-control"
+                   placeholder="전화번호를 입력하세요"
+                   th:class="${#fields.hasErrors('telephoneNumber')}? 'form-control
+fieldError' : 'form-control'">
+            <p th:if="${#fields.hasErrors('telephoneNumber')}"
+               th:errors="*{telephoneNumber}">Incorrect date</p>
+        </div>
+        <div class="form-group">
+            <label th:for="emailAddress">이메일주소</label>
+            <input type="text" th:field="*{emailAddress}" class="form-control"
+                   placeholder="이메일주소를 입력하세요"
+                   th:class="${#fields.hasErrors('emailAddress')}? 'form-control
+fieldError' : 'form-control'">
+            <p th:if="${#fields.hasErrors('emailAddress')}"
+               th:errors="*{emailAddress}">Incorrect date</p>
+        </div>
+        <br>
+        <button type="submit" class="btn btn-primary">기재하기</button>
+        &nbsp;&nbsp;
+        <a href="/"class="btn btn-info">돌아가기</a>
+    </form>
+    <br/>
+    <div th:replace="fragments/footer :: footer" />
+</div> <!-- /container -->
+</body>
+</html>
+```
+
+th:object에 아까 createForm에서 전달한 recordPersonalForm을 저장합니다.  
+각 input의 th:field에는 recordPersonalForm의 멤버인 name, address, telephoneNumber, emailAddress를 대입하여 클라이언트가 웹 화면에서 입력하는 정보를 recordPersonalForm의 각 필드에 저장할 수 있도록 합니다.  
+
+또한 RecordPersonalForm 클래스에서 입력 유효성 검증을 하기 위한 예외 메세지 처리를 출력할 수 있도록 th:if와 th:errors를 이용합니다.  
+
+사용자가 기재하기 버튼을 클릭하면 입력 유효성 검증을 통과하였다면 form에서 post 메소드를 설정하였기 때문에 경로는 그대로이고 http 메서드가 post인 곳으로 이동합니다.  
+
+이 때 recordPersonalForm도 함께 넘어가는데 처음 createForm에서 넘어온 recordPersonalForm에는 아무 정보도 없었지만 기재하기 버튼을 누를 때는 recordPersonalForm에는 사용자가 입력한 정보를 담고 있고, recordPersonalForm이 PostMapping이 붙어 있는 recordPersonal 메서드에 함께 전달됩니다.  
+
+즉, 여기서 기재하기 버튼을 누르면 RecordPersonalController에서 PostMapping이 붙어 있는 recordPersonal 메서드로 연결되게 됩니다.  
+
+돌아가기 버튼을 누르면 홈화면으로 되돌아갑니다.  
+
+## recordPersonalForm.html 기본 화면
+![기재하기화면](../../images/2022-05-17-addressbook_web_project_03/기재하기_기본_화면.JPG)
+
+## recordPersonalForm.html 공백 예외 화면
+![기재하기공백예외화면](../../images/2022-05-17-addressbook_web_project_03/기재하기_예외_화면_1.JPG)
+
+## recordPersonalForm.html 이메일 형식 예외 화면
+![기재하기이메일형식예외화면](../../images/2022-05-17-addressbook_web_project_03/기재하기_예외_화면_2.JPG)
 
