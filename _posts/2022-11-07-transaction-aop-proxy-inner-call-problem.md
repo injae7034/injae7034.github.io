@@ -197,8 +197,7 @@ class RentalPlaceService {
         )
 
         //2.
-        
-        (
+        updatePlaceOperationTimes(
                 //3.
                 makeChangePlaceOperationTimes(
                         updateRentalPlaceReq
