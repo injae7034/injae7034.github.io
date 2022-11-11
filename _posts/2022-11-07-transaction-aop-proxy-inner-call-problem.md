@@ -486,9 +486,9 @@ Target(A)의 A-b 메소드의 비지니스 로직이 수행되기 때문에
 
 먼저 가장 간단한 방법은 **transactional 애너테이션이 없는 메소드 내부에서 같은 클래스의 transactional 애너테이션이 있는 메소드를 호출하는 경우**를 막는 것입니다.  
 
-그러기 위해서 **transactional 애너테이션이 없는 메소드**에 transactional을 추가하고,  
+그러기 위해서 **transactional 애너테이션이 없는 가장 상위 메소드**에서 transactional을 추가하고,  
 
-**내부에서 호출되는 메소드에서 transactional 애너테이션을 제거**하는 방법입니다.(당연히 상위 클래스에서 transactional 애너테이션이 있기 때문에 여기에는 없어도 됩니다.)  
+**내부에서 호출되는 메소드에서 transactional 애너테이션을 제거**하는 방법입니다.(당연히 가장 상위 클래스에서 transactional 애너테이션이 있기 때문에 여기에는 없어도 됩니다.)  
 
 이걸 위의 비지니스로직에 적용하면 **//1.updateRentalPlace, //2.updatePlaceOperationTimes, //4.deleteAllGeofence, //5.updateAllGeofence**에서 transactional 애너테이션을 모두 제거하고,  
 
