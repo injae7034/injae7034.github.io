@@ -715,7 +715,7 @@ class FindPedestrianRoutesRes(
 ```
 이로써 TMAP OpenAPI를 통해 도보 길 안내 결과를 얻을 수 있습니다.  
 
-# 더 나아기기
+# 더 나아가기
 지금 이 TMAP OpenAPI를 호출하는 PedestrianRouteService가 있고, MSA 구조 하에서 도보 길 안내 결과를 얻고 싶어하는 다른 서비스 클래스가 있다고 가정합시다.  
 
 예를 들어, 사용자가 폰으로 도보 길 찾기를 할 수 있는 모바일 서비스인 PedestrianRouteMobileService가 있다고 가정합니다.  
