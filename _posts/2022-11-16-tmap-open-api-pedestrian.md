@@ -777,7 +777,7 @@ class PedestrianRouteMobileService {
             )
         }
 
-        //필요하게 가공한 후에 return
+        //필요에 따라 알맞게 가공한 후에 return
 
 }
 ```
