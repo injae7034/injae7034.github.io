@@ -516,9 +516,11 @@ properties도 geometry의 type이 Point인지 LineString인지에 따라 필드�
 
 geometry의 type이 Point는 시작점, 도착점 그리고 경유지점을 나타내고,  
 
-geometry의 type이 LineString은 각각지점마다 경로를 나타냅니다.   
+geometry의 type이 LineString은 각각지점마다 경로를 나타냅니다.  
 
-**가장 중요한 정보인 totalDistance와 totalTime은 FeatureCollection의 가장 첫번쩨 Feature(geometry type: Point)의 properties에만 포함**되어 있습니다.  
+**가장 중요한 정보인 totalDistance와 totalTime**은  
+
+**FeatureCollection의 가장 첫번째 Feature(geometry type: Point)의 properties에만 포함**되어 있습니다.  
 
 그래서 총거리나 총소요시간을 알고 싶으면 첫번째 Feature의 properties에서 정보를 구해오면 됩니다.  
 
