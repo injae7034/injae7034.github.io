@@ -655,7 +655,7 @@ class PedestrianRouteService {
     lateinit var tMapApiKeys: TMapApiKeys
 
 
-    fun findWalkingRoutes(
+    fun findPedestrianRoutes(
         req: PedestrianRoutesApiReq
     ): ResponseEntity<FindPedestrianRoutesRes> {
 
@@ -673,7 +673,7 @@ class PedestrianRouteService {
             )
 
             //보행자 경로 생성
-            val routes = buildRouteList(response)
+            val routes = buildPedestrianRoutes(response)
 
             val findPedestrianRoutesRes = FindPedestrianRoutesRes(
                 routes = routes,
@@ -691,17 +691,17 @@ class PedestrianRouteService {
     }
 
     //type: Point는 제외하고, LineString경우만 추가해서 보행자 경로를 생성함.
-    fun buildRouteList(
+    fun buildPedestrianRoutes(
         response: PedestrianRoutesApiRes?
     ): ArrayList<ArrayList<Double>>{
-        val routeList = ArrayList<ArrayList<Double>>()
+        val pedestrianRoutes = ArrayList<ArrayList<Double>>()
         response?.features
             ?.forEach {
-                if(it.geometry is FindWalkingRoutesApiRes.TmapFeature.LineString){
+                if(it.geometry is PedestrianRoutesApiRes.Feature.LineString){
                     routeList.addAll(it.geometry.coordinates)
                 }
             }
-        return routeList
+        return pedestrianRoutes
     }
 }
 ```
@@ -720,7 +720,7 @@ class FindPedestrianRoutesRes(
 
 예를 들어, 사용자가 폰으로 도보 길 찾기를 할 수 있는 모바일 서비스인 PedestrianRouteMobileService가 있다고 가정합니다.  
 
-PedestrianRouteMobileService가 PedestrianRouteService의 findWalkingRoutes 메소드를 호출하여 사용하려면  
+PedestrianRouteMobileService가 PedestrianRouteService의 findPedestrianRoutes 메소드를 호출하여 사용하려면  
 
 PedestrianRouteService가 TMAP OpenAPI를 호출했을 때처럼 FeignClient를 사용하면 됩니다.  
 
@@ -769,16 +769,10 @@ class PedestrianRouteMobileService {
                 endX = endLat,
                 endY = endLng
             )
-        )
+        )?: //에러처리
 
-        if (response == null) {
-            return GetWalkingRouteResultRes(
-                UNKNOWN_ERROR
-            )
-        }
-
-        //필요에 따라 알맞게 가공한 후에 return
-
+        //데이터베이스에 보행자 안내 결과 저장 후 필요에 따라 알맞게 가공한 후에 return
+    }
 }
 ```
 
